@@ -84,10 +84,12 @@ public class Single {
 				// カレントパスがファイルであればカレントディレクトリパスを求める
 				String ts[] = t.split( "/" );
 				if( ts.length != 0 && ts[ts.length - 1].contains( "." ) ) {
-					t = "/";
+					StringBuilder tb = new StringBuilder();
 					for( int i = 0; i < ts.length - 1; i++ ) {
-						t += ts[i] + "/";
+						tb.append( ts[i] );
+						tb.append( "/" );
 					}
+					t = tb.toString();
 				}
 
 				if( !t.startsWith( "/" ) ) {
@@ -95,7 +97,7 @@ public class Single {
 				}
 				sb.append( t );
 
-				if( !t.endsWith( "/" ) ) {
+				if( !sb.toString().endsWith( "/" ) ) {
 					sb.append( "/" );
 				}
 				sb.append( path );
