@@ -107,28 +107,23 @@ public class Single {
 	}
 
 	private Source saveHTML( URL url ) throws IOException {
-		final File dist = createFile();
-		if( dist == null ) {
+		final File page = new File( localDir.getCanonicalPath() + "/" + localDir.getName() + ".html" );
+		if( !page.createNewFile() ) {
 			return null;
 		}
 
 		final Source src = new Source( url );
-		FileWriter w = new FileWriter( dist );
+		FileWriter w = new FileWriter( page );
 		w.write( src.toString() );
 		w.flush();
 		w.close();
 		return src;
 	}
 
-	private File createFile() throws IOException {
-		File page = new File( localDir.getCanonicalPath() + "/" + localDir.getName() + ".html" );
-		if( !page.createNewFile() ) {
-			return null;
-		}
-		return page;
-	}
-
 	private void save( File file, URL url ) throws IOException {
+		if( !file.createNewFile() ) {
+			return;
+		}
 		URLConnection c = url.openConnection();
 		InputStream in = c.getInputStream();
 		FileOutputStream out = new FileOutputStream( file );
