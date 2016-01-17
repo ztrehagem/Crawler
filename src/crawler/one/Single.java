@@ -28,6 +28,9 @@ public class Single {
 	private int		fileId		= 0;
 	private Object	fileIdMutex	= new Object();
 
+	private Source			src;
+	private OutputDocument	od;
+
 	public Single( String url ) throws Exception {
 		localDir = new File( "result/" + String.valueOf( System.currentTimeMillis() ) );
 		localDir.mkdirs();
@@ -42,32 +45,32 @@ public class Single {
 
 	public void process() throws Exception {
 
-		final Source src = new Source( url );
-		final OutputDocument od = new OutputDocument( src );
+		src = new Source( url );
+		od = new OutputDocument( src );
 
-		saveExternals( src );
+		saveExternals();
 
-		saveHTML( od );
+		saveHTML();
 	}
 
-	private void saveExternals( Source src ) {
-		searchExternals( HTMLElementName.LINK, "href", src );
-		searchExternals( HTMLElementName.SCRIPT, "src", src );
-		searchExternals( HTMLElementName.IMG, "src", src );
+	private void saveExternals() {
+		searchExternals( HTMLElementName.LINK, "href" );
+		searchExternals( HTMLElementName.SCRIPT, "src" );
+		searchExternals( HTMLElementName.IMG, "src" );
 
 		int id = 0;
 		Set<String> keyset = extfilemap.keySet();
-		//		for( String path : keyset ) {
-		//			try {
-		//				save( new File( localDir, extfilemap.get( path ) ), new URL( path ) );
-		//			}
-		//			catch( IOException e ) {
-		//				e.printStackTrace();
-		//			}
-		//		}
+		for( String path : keyset ) {
+			try {
+				save( new File( localDir, extfilemap.get( path ) ), new URL( path ) );
+			}
+			catch( IOException e ) {
+				e.printStackTrace();
+			}
+		}
 	}
 
-	private void searchExternals( String tag, String attrName, Source src ) {
+	private void searchExternals( String tag, String attrName ) {
 		List<Element> l = src.getAllElements( tag );
 		for( Element e : l ) {
 			Attributes attrs = e.getAttributes();
@@ -95,13 +98,23 @@ public class Single {
 			extfilemap.put( path, outputFilename );
 
 			// 出力HTMLのhrefを書き換える // Map中被りにも適用しろ
+			String replaced = null;
 			{
 				OutputDocument od = new OutputDocument( e );
 				Log.v( getClass(), "od before '" + od.toString() + "'" );
 				HashMap<String, String> attrmap = new HashMap<>();
+				for( Attribute a : e.getAttributes() ) {
+					if( a.getName().equals( attrName ) )
+						continue;
+					attrmap.put( a.getName(), a.getValue() );
+				}
 				attrmap.put( attrName, outputFilename );
 				od.replace( attrs, attrmap );
-				Log.v( getClass(), "od after '" + od.toString() + "'" );
+				replaced = od.toString();
+				Log.v( getClass(), "od after '" + replaced + "'" );
+			}
+			{
+				od.replace( e, replaced );
 			}
 
 			Log.v( getClass(), "add extfiles <" + tag + " " + attrName + "> '" + path + "'" );
@@ -152,7 +165,7 @@ public class Single {
 		return sb.toString();
 	}
 
-	private void saveHTML( OutputDocument od ) throws IOException {
+	private void saveHTML() throws IOException {
 		final File file = new File( localDir.getCanonicalPath() + "/" + localDir.getName() + ".html" );
 		if( !file.createNewFile() ) {
 			Log.e( getClass(), "failed create html file" );
