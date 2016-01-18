@@ -85,7 +85,7 @@ class Page implements Runnable {
 			if( !extfilemap.containsKey( path ) ) {
 				final String ext = getExtension( e, path );
 				if( ext == null ) {
-					Log.e( getClass(), "unknown MIME type '" + e );
+					Log.v( getClass(), "unknown MIME type '" + e );
 					continue;
 				}
 				outputFilename = ++fileId + "." + ext;

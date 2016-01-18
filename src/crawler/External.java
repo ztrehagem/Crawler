@@ -11,18 +11,21 @@ import debug.Log;
 class External implements Runnable {
 	// single External
 
-	private final File	file;
-	private final URL	url;
+	private final File		file;
+	private final URL		url;
+	private final boolean	isCss;
 
 	External( String url, File file ) throws MalformedURLException {
 		this.url = new URL( url );
 		this.file = file;
+		this.isCss = this.file.getName().endsWith( ".css" );
 	}
 
 	@Override
 	public void run() {
 
 		try {
+			Log.v( getClass(), "save start '" + file );
 			if( !file.createNewFile() ) {
 				Log.e( getClass(), "This file is already exist '" + file + "'" );
 				return;
@@ -40,6 +43,9 @@ class External implements Runnable {
 			out.close();
 			in.close();
 
+			if( isCss ) {
+				new CssExternal( this.url, this.file ).process();
+			}
 		}
 		catch( Exception e ) {
 			Log.e( getClass(), "Exception on External '" + url + "'" );
