@@ -20,20 +20,20 @@ class Page implements Runnable {
 	// Page ->> Page
 	// Page ->> External
 
-	private final Master master;
+	private final Master				master;
 
-	private final File	root;
-	private final File	dir;
-	private final URL	url;
-	private final int	pageId;
-	private final int	h;
+	private final File					root;
+	private final File					dir;
+	private final URL					url;
+	private final int					pageId;
+	private final int					h;
 
 	private final Map<String, String>	extfilemap;
 	private final Map<String, Integer>	linkedpagemap;
 
-	private Source			src;
-	private OutputDocument	od;
-	private int				fileId	= 0;
+	private Source						src;
+	private OutputDocument				od;
+	private int							fileId	= 0;
 
 	Page( Master master, String url, int pageId, int h ) throws MalformedURLException {
 		this.master = master;
@@ -117,11 +117,13 @@ class Page implements Runnable {
 			final PageInfo i = master.addPageList( path );
 			final String outputFilename = i.pageId + ".html";
 
-			if( !i.exist )
+			if( this.h > 0 && !i.exist )
 				linkedpagemap.put( path, i.pageId );
 
-			if( h > 0 || (h == 0 && i.exist) )
-				modifyRef( e, attrname, outputFilename );
+			if( this.h == 0 && !i.exist )
+				continue;
+
+			modifyRef( e, attrname, outputFilename );
 		}
 	}
 
@@ -227,15 +229,13 @@ class Page implements Runnable {
 		ArrayList<Thread> tl = new ArrayList<>();
 
 		// Pages
-		if( this.h > 0 ) {
-			for( Entry<String, Integer> e : linkedpagemap.entrySet() ) {
-				try {
-					tl.add( new Thread( new Page( master, e.getKey(), e.getValue(), h - 1 ) ) );
-				}
-				catch( MalformedURLException exc ) {
-					Log.e( getClass(), "Exception on create page" );
-					exc.printStackTrace();
-				}
+		for( Entry<String, Integer> e : linkedpagemap.entrySet() ) {
+			try {
+				tl.add( new Thread( new Page( master, e.getKey(), e.getValue(), h - 1 ) ) );
+			}
+			catch( MalformedURLException exc ) {
+				Log.e( getClass(), "Exception on create page" );
+				exc.printStackTrace();
 			}
 		}
 
