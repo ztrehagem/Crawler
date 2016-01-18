@@ -21,7 +21,6 @@ class External implements Runnable {
 
 	@Override
 	public void run() {
-		Log.v( getClass(), "start '" + url + "' -> '" + file + "'" );
 
 		try {
 			if( !file.createNewFile() ) {

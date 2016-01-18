@@ -57,8 +57,7 @@ class Page implements Runnable {
 			this.od = new OutputDocument( src );
 
 			searchExternals();
-			if( h > 0 )
-				searchPages();
+			searchPages();
 			savePage();
 			runThreads();
 		}
@@ -93,7 +92,6 @@ class Page implements Runnable {
 				}
 				outputFilename = ++fileId + "." + ext;
 				extfilemap.put( path, outputFilename );
-				Log.v( getClass(), "found external " + e );
 			}
 			else {
 				outputFilename = extfilemap.get( path );
@@ -119,11 +117,11 @@ class Page implements Runnable {
 			final PageInfo i = master.addPageList( path );
 			final String outputFilename = i.pageId + ".html";
 
-			if( !i.exist ) {
+			if( !i.exist )
 				linkedpagemap.put( path, i.pageId );
-			}
 
-			modifyRef( e, attrname, outputFilename );
+			if( h > 0 || (h == 0 && i.exist) )
+				modifyRef( e, attrname, outputFilename );
 		}
 	}
 
@@ -229,13 +227,15 @@ class Page implements Runnable {
 		ArrayList<Thread> tl = new ArrayList<>();
 
 		// Pages
-		for( Entry<String, Integer> e : linkedpagemap.entrySet() ) {
-			try {
-				tl.add( new Thread( new Page( master, e.getKey(), e.getValue(), h - 1 ) ) );
-			}
-			catch( MalformedURLException exc ) {
-				Log.e( getClass(), "Exception on create page" );
-				exc.printStackTrace();
+		if( this.h > 0 ) {
+			for( Entry<String, Integer> e : linkedpagemap.entrySet() ) {
+				try {
+					tl.add( new Thread( new Page( master, e.getKey(), e.getValue(), h - 1 ) ) );
+				}
+				catch( MalformedURLException exc ) {
+					Log.e( getClass(), "Exception on create page" );
+					exc.printStackTrace();
+				}
 			}
 		}
 
