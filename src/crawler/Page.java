@@ -86,8 +86,9 @@ class Page implements Runnable {
 			String outputFilename;
 
 			if( !extfilemap.containsKey( path ) ) {
-				outputFilename = ++fileId + "." + getExtension( path );
+				outputFilename = ++fileId + "." + getExtension( tag, path );
 				extfilemap.put( path, outputFilename );
+				Log.v( getClass(), "found external " + e );
 			}
 			else {
 				outputFilename = extfilemap.get( path );
@@ -111,7 +112,7 @@ class Page implements Runnable {
 
 			path = makeFullPath( path );
 			final PageInfo i = master.addPageList( path );
-			final String outputFilename = i.pageId + "." + getExtension( path );
+			final String outputFilename = i.pageId + ".html";
 
 			if( !i.exist ) {
 				linkedpagemap.put( path, i.pageId );
@@ -177,8 +178,15 @@ class Page implements Runnable {
 		return sb.toString();
 	}
 
-	private String getExtension( String path ) {
-		String[] sp = path.split( "\\?" );
+	private String getExtension( String tag, String path ) {
+		if( tag.equals( HTMLElementName.LINK ) ) {
+			return "css";
+		}
+		String[] sp = path.split( "#" );
+		if( sp.length == 0 )
+			return null;
+		path = sp[0];
+		sp = path.split( "\\?" );
 		if( sp.length == 0 )
 			return null;
 		path = sp[0];
