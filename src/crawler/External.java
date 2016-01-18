@@ -21,7 +21,7 @@ class External implements Runnable {
 
 	@Override
 	public void run() {
-		Log.v( getClass(), "start save external '" + url + "' -> '" + file + "'" );
+		Log.v( getClass(), "start '" + url + "' -> '" + file + "'" );
 
 		try {
 			if( !file.createNewFile() ) {
@@ -41,7 +41,6 @@ class External implements Runnable {
 			out.close();
 			in.close();
 
-			Log.v( getClass(), "save done '" + url + "' -> '" + file + "'" );
 		}
 		catch( Exception e ) {
 			Log.e( getClass(), "Exception on External '" + url + "'" );

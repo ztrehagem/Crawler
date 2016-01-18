@@ -48,7 +48,7 @@ class Page implements Runnable {
 
 	@Override
 	public void run() {
-		Log.v( getClass(), "start page '" + this.url + "'" );
+		Log.v( getClass(), "start '" + this.url + "'" );
 
 		try {
 			this.dir.mkdir();
@@ -65,9 +65,6 @@ class Page implements Runnable {
 		catch( IOException e ) {
 			Log.e( getClass(), "IOException on Page '" + url + "'" );
 			e.printStackTrace();
-		}
-		finally {
-			Log.v( getClass(), "finish page '" + this.url + "'" );
 		}
 	}
 
@@ -144,7 +141,7 @@ class Page implements Runnable {
 		StringBuilder sb = new StringBuilder();
 		if( path.contains( "//" ) ) { // 絶対パス
 			sb.append( path );
-			if( !path.contains( ":" ) ) {
+			if( path.startsWith( "//" ) ) {
 				sb.insert( 0, ":" ).insert( 0, this.url.getProtocol() );
 			}
 		}
@@ -181,7 +178,11 @@ class Page implements Runnable {
 	}
 
 	private String getExtension( String path ) {
-		final String[] sp = path.split( "\\." );
+		String[] sp = path.split( "\\?" );
+		if( sp.length == 0 )
+			return null;
+		path = sp[0];
+		sp = path.split( "\\." );
 		if( sp.length == 0 )
 			return null;
 		return sp[sp.length - 1];
