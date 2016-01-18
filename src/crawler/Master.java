@@ -1,40 +1,53 @@
 package crawler;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 import debug.Log;
 
 public class Master {
+	// Master -> Page
 
-	private final String	url;
 	private final File		root;
+	private final String	url;
+	private final int		h;
 
-	public Master( String url ) {
+	private final Map<String, Integer> pagemap;
+
+	private int pageIdCounter = 0;
+
+	public Master( String url, int h ) throws MalformedURLException {
+		this.root = new File( "result/" + String.valueOf( System.currentTimeMillis() ) );
+		this.root.mkdirs();
+		Log.v( getClass(), "dir '" + this.root.getAbsolutePath() + "'" );
+
 		this.url = url;
-		Log.v( Master.class, "target url '" + url + "'" );
+		Log.v( getClass(), "target '" + url + "'" );
 
-		root = Slave.rootDir = new File( "result/" + String.valueOf( System.currentTimeMillis() ) );
-		root.mkdirs();
-		Log.v( Master.class, "root dir '" + root.getAbsolutePath() + "'" );
+		this.h = h;
 
-		// --　ignition --
-		File current;
-		try {
-			current = new File( root.getCanonicalPath() );
-		}
-		catch( IOException e ) {
-			e.printStackTrace();
-			return;
-		}
-		Thread th = new Thread( new Slave( url, current ) );
-		th.start();
+		this.pagemap = new HashMap<>();
+	}
 
-		// -- complete -- 
-		try {
-			th.join();
+	public void process() throws MalformedURLException, InterruptedException {
+		Log.v( getClass(), "start" );
+		Thread t = new Thread( new Page( this, url, ++pageIdCounter, h - 1 ) );
+		t.start();
+		t.join();
+		Log.v( Main.class, "done!" );
+	}
+
+	File getRootDir() {
+		return this.root;
+	}
+
+	synchronized PageInfo addPageList( String url ) {
+		if( pagemap.containsKey( url ) ) {
+			return new PageInfo( pagemap.get( url ), true );
 		}
-		catch( InterruptedException e ) {
-			e.printStackTrace();
-		}
+
+		pagemap.put( url, ++pageIdCounter );
+		return new PageInfo( pageIdCounter, false );
 	}
 }

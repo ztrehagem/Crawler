@@ -1,6 +1,5 @@
 package crawler;
 
-import crawler.one.Single;
 import debug.Log;
 import net.htmlparser.jericho.MasonTagTypes;
 import net.htmlparser.jericho.MicrosoftConditionalCommentTagTypes;
@@ -8,36 +7,29 @@ import net.htmlparser.jericho.PHPTagTypes;
 
 public class Main {
 
-	public static void main( String[] args ) {
+	public static void main( String[] args ) throws Exception {
 		String url = "http://megahertz.michikusa.jp/";
+		int h = 1;
+
+		if( args.length >= 1 ) {
+			h = Integer.parseInt( args[0] );
+		}
+		if( args.length >= 2 ) {
+			url = args[1];
+		}
 		if( args.length == 0 ) {
 			Log.e( Main.class, "using default url '" + url + "'" );
-		}
-		else {
-			url = args[0];
 		}
 
 		if( !url.contains( ":" ) ) {
 			url = "file:" + url;
 		}
-		if( !url.endsWith( "/" ) ) {
-			//			url = url + "/";
-		}
 
 		initialize_Jericho();
 
-		// -- thread --
-		//		new Master( url );
+		new Master( url, h ).process();
 
-		// -- single get --
-		try {
-			new Single( url ).process();
-		}
-		catch( Exception e ) {
-			e.printStackTrace();
-		}
-
-		Log.v( Main.class, "done!" );
+		//		new Single( url ).process();
 	}
 
 	private static void initialize_Jericho() {
