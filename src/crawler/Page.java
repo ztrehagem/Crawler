@@ -22,7 +22,6 @@ class Page implements Runnable {
 
 	private final Master				master;
 
-	private final File					root;
 	private final File					dir;
 	private final URL					url;
 	private final int					pageId;
@@ -37,8 +36,7 @@ class Page implements Runnable {
 
 	Page( Master master, String url, int pageId, int h ) throws MalformedURLException {
 		this.master = master;
-		this.root = master.getRootDir();
-		this.dir = new File( this.root, String.valueOf( pageId ) );
+		this.dir = new File( master.root, String.valueOf( pageId ) );
 		this.url = new URL( url );
 		this.pageId = pageId;
 		this.h = h;
@@ -77,7 +75,7 @@ class Page implements Runnable {
 		for( Element e : src.getAllElements( tag ) ) {
 
 			String path = e.getAttributeValue( attrname );
-			if( path == null || path.startsWith( "#" ) || path.startsWith( "javascript:" ) ) {
+			if( !isExternalLink( path ) ) {
 				continue;
 			}
 
@@ -109,7 +107,7 @@ class Page implements Runnable {
 		for( Element e : src.getAllElements( tag ) ) {
 
 			String path = e.getAttributeValue( attrname );
-			if( path == null || path.startsWith( "#" ) || path.startsWith( "javascript:" ) ) {
+			if( !isExternalLink( path ) ) {
 				continue;
 			}
 
@@ -212,8 +210,12 @@ class Page implements Runnable {
 		return sp[sp.length - 1];
 	}
 
+	private boolean isExternalLink( String ref ) {
+		return ref != null && !ref.startsWith( "#" ) && !ref.startsWith( "javascript:" );
+	}
+
 	private void savePage() throws IOException {
-		final File file = new File( root, this.pageId + ".html" );
+		final File file = new File( master.root, this.pageId + ".html" );
 		if( !file.createNewFile() ) {
 			Log.e( getClass(), "failed create html file" );
 			return;
@@ -225,7 +227,7 @@ class Page implements Runnable {
 		w.close();
 	}
 
-	void runThreads() {
+	private void runThreads() {
 		ArrayList<Thread> tl = new ArrayList<>();
 
 		// Pages

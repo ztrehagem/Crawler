@@ -9,13 +9,13 @@ import debug.Log;
 public class Master {
 	// Master -> Page
 
-	private final File		root;
-	private final String	url;
-	private final int		h;
+	final File							root;
+	private final String				url;
+	private final int					h;
 
-	private final Map<String, Integer> pagemap;
+	private final Map<String, Integer>	pagemap;
 
-	private int pageIdCounter = 0;
+	private int							pageIdCounter	= 0;
 
 	public Master( String url, int h ) throws MalformedURLException {
 		this.root = new File( "result/" + String.valueOf( System.currentTimeMillis() ) );
@@ -35,11 +35,7 @@ public class Master {
 		Thread t = new Thread( new Page( this, url, ++pageIdCounter, h - 1 ) );
 		t.start();
 		t.join();
-		Log.v( Main.class, "done!" );
-	}
-
-	File getRootDir() {
-		return this.root;
+		Log.v( getClass(), "done!" );
 	}
 
 	synchronized PageInfo addPageList( String url ) {
