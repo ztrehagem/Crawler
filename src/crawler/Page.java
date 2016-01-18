@@ -86,7 +86,12 @@ class Page implements Runnable {
 			String outputFilename;
 
 			if( !extfilemap.containsKey( path ) ) {
-				outputFilename = ++fileId + "." + getExtension( tag, path );
+				final String ext = getExtension( e, path );
+				if( ext == null ) {
+					Log.e( getClass(), "unknown MIME type '" + e );
+					continue;
+				}
+				outputFilename = ++fileId + "." + ext;
 				extfilemap.put( path, outputFilename );
 				Log.v( getClass(), "found external " + e );
 			}
@@ -178,9 +183,20 @@ class Page implements Runnable {
 		return sb.toString();
 	}
 
-	private String getExtension( String tag, String path ) {
-		if( tag.equals( HTMLElementName.LINK ) ) {
-			return "css";
+	private String getExtension( Element e, String path ) {
+		if( e.getName().equals( HTMLElementName.LINK ) ) {
+			String rel = e.getAttributeValue( "rel" );
+			if( rel != null && !rel.toLowerCase().equals( "stylesheet" ) )
+				return null;
+			else
+				return "css";
+		}
+		if( e.getName().equals( HTMLElementName.SCRIPT ) ) {
+			String type = e.getAttributeValue( "type" );
+			if( type == null || type.toLowerCase().equals( "text/javascript" ) )
+				return "js";
+			else
+				return null;
 		}
 		String[] sp = path.split( "#" );
 		if( sp.length == 0 )
