@@ -1,4 +1,4 @@
-package crawler;
+package crawler2;
 
 import java.net.URI;
 import debug.Log;
@@ -9,13 +9,7 @@ import net.htmlparser.jericho.PHPTagTypes;
 public class Main {
 
 	public static void main( String[] args ) throws Exception {
-		//		String url = "http://megahertz.michikusa.jp/";
-		//		String url = "http://www.ise.shibaura-it.ac.jp/";
-		//		String url = "http://www.shibaura-it.ac.jp/";
-		//		String url = "http://www.apple.com/";
-		//		String url = "http://www.m3net.jp/";
-		//		String url = "http://dengekibunko.jp/newreleases/978-4-04-865133-2/";
-		String url = "http://www.yahoo.co.jp/";
+		String url = "http://www.apple.com/";
 		int h = 1;
 
 		if( args.length == 0 ) {
@@ -37,9 +31,7 @@ public class Main {
 
 		initialize_Jericho();
 
-		new Master( url, h ).process();
-
-		//		new Single( url ).process();
+		new Master( url, h );
 	}
 
 	private static void initialize_Jericho() {
