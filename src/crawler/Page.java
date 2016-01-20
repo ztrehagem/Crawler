@@ -46,23 +46,23 @@ class Page implements Runnable {
 
 	@Override
 	public void run() {
-		//		Log.v( getClass(), "start '" + this.url + "'" );
+
+		this.dir.mkdir();
 
 		try {
-			this.dir.mkdir();
-
 			this.src = new Source( this.url );
-			this.od = new OutputDocument( src );
-
-			searchExternals();
-			searchPages();
-			savePage();
-			runThreads();
 		}
 		catch( IOException e ) {
-			Log.e( getClass(), "IOException on Page '" + url + "'" );
-			e.printStackTrace();
+			Log.e( getClass(), "Exception in run : new Source '" + this.url + "' : " + e );
+			return;
 		}
+
+		this.od = new OutputDocument( src );
+
+		searchExternals();
+		searchPages();
+		savePage();
+		runThreads();
 	}
 
 	void searchExternals() {
@@ -84,7 +84,7 @@ class Page implements Runnable {
 			if( !extfilemap.containsKey( path ) ) {
 				final String ext = getExtension( e, path );
 				if( ext == null ) {
-					Log.v( getClass(), "unknown MIME type '" + e );
+					//					Log.v( getClass(), "unknown MIME type '" + e );
 					continue;
 				}
 				outputFilename = ++fileId + "." + ext;
@@ -213,17 +213,23 @@ class Page implements Runnable {
 			&& !ref.startsWith( "mailto:" );
 	}
 
-	private void savePage() throws IOException {
+	private void savePage() {
 		final File file = new File( master.root, this.pageId + ".html" );
-		if( !file.createNewFile() ) {
-			Log.e( getClass(), "failed create html file" );
-			return;
+		try {
+			file.createNewFile();
 		}
-
-		FileWriter w = new FileWriter( file );
-		w.write( od.toString() );
-		w.flush();
-		w.close();
+		catch( IOException e ) {
+			Log.e( getClass(), "Exception in savePage : createFile() '" + file + "' : " + e );
+		}
+		try {
+			FileWriter w = new FileWriter( file );
+			w.write( od.toString() );
+			w.flush();
+			w.close();
+		}
+		catch( IOException e ) {
+			Log.e( getClass(), "Exception in savePage : saving '" + url + "' : " + e );
+		}
 	}
 
 	private void runThreads() {
@@ -235,8 +241,7 @@ class Page implements Runnable {
 				tl.add( new Thread( new Page( master, e.getKey(), e.getValue(), h - 1 ) ) );
 			}
 			catch( MalformedURLException exc ) {
-				Log.e( getClass(), "Exception on create page" );
-				exc.printStackTrace();
+				Log.e( getClass(), "Exception in runThreads : pages '" + e + "' : " + exc );
 			}
 		}
 
@@ -246,8 +251,7 @@ class Page implements Runnable {
 				tl.add( new Thread( new External( e.getKey(), new File( dir, e.getValue() ) ) ) );
 			}
 			catch( MalformedURLException exc ) {
-				Log.e( getClass(), "Exception on create external" );
-				exc.printStackTrace();
+				Log.e( getClass(), "Exception in runThreads : exts '" + e + "' : " + exc );
 			}
 		}
 
@@ -260,8 +264,7 @@ class Page implements Runnable {
 				t.join();
 			}
 			catch( InterruptedException e ) {
-				Log.e( getClass(), "Exception on thread joining" );
-				e.printStackTrace();
+				Log.e( getClass(), "Exception in runThreads : joining : " + e );
 			}
 		}
 	}

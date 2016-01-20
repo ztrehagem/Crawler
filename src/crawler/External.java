@@ -1,7 +1,9 @@
 package crawler;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,11 +27,14 @@ class External implements Runnable {
 	public void run() {
 
 		try {
-			//			Log.v( getClass(), "save start '" + file );
-			if( !file.createNewFile() ) {
-				Log.e( getClass(), "This file is already exist '" + file + "'" );
-				return;
-			}
+			file.createNewFile();
+		}
+		catch( IOException e ) {
+			Log.e( getClass(), "Exception in run : createNewFile '" + file + "' : " + e );
+			return;
+		}
+
+		try {
 			URLConnection c = url.openConnection();
 			InputStream in = c.getInputStream();
 			FileOutputStream out = new FileOutputStream( file );
@@ -42,14 +47,16 @@ class External implements Runnable {
 			}
 			out.close();
 			in.close();
-
-			if( isCss ) {
-				new CssExternal( this.url, this.file ).process();
-			}
 		}
-		catch( Exception e ) {
-			Log.e( getClass(), "Exception on External '" + url + "' -> '" + file + "'" );
-			e.printStackTrace();
+		catch( FileNotFoundException e ) {
+			Log.e( getClass(), "FileNotFoundException in run : ExtFileSaving '" + file + "' <- '" + url + "' : " + e );
+		}
+		catch( IOException e ) {
+			Log.e( getClass(), "Exception in run : ExtFileSaving '" + url + "': " + e );
+		}
+
+		if( isCss ) {
+			new CssExternal( this.url, this.file ).process();
 		}
 	}
 }
