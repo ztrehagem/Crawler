@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +91,8 @@ class Page implements Runnable {
 				}
 				outputFilename = ++fileId + "." + ext;
 				extfilemap.put( path, outputFilename );
+
+				//				Log.v( getClass(), "found ext '" + outputFilename + "' <- '" + path + "'" );
 			}
 			else {
 				outputFilename = extfilemap.get( path );
@@ -110,8 +114,9 @@ class Page implements Runnable {
 				continue;
 
 			path = makeFullPath( path );
+			final String ext = getExtension( e, path );
 			final PageInfo i = master.addPageList( path );
-			final String outputFilename = i.pageId + ".html";
+			final String outputFilename = i.pageId + (ext == null ? ".html" : "." + ext);
 
 			if( this.h > 0 && !i.exist )
 				linkedpagemap.put( path, i.pageId );
@@ -137,46 +142,64 @@ class Page implements Runnable {
 		final String replaced = od.toString();
 
 		this.od.replace( e, replaced );
+
+		Log.v( getClass(), "replaced '" + e + "' -> '" + replaced + "'" );
 	}
 
-	private String makeFullPath( final String path ) {
-		StringBuilder sb = new StringBuilder();
-		if( path.contains( "//" ) ) { // 絶対パス
-			sb.append( path );
-			if( path.startsWith( "//" ) ) {
-				sb.insert( 0, ":" ).insert( 0, this.url.getProtocol() );
-			}
-		}
-		else { // 相対パス
-			sb.append( this.url.getProtocol() ).append( "://" ).append( this.url.getHost() );
-			if( path.startsWith( "/" ) ) { // ルートから
+	/*
+		private String makeFullPath( final String path ) {
+			StringBuilder sb = new StringBuilder();
+			if( path.contains( "//" ) ) { // 絶対パス
 				sb.append( path );
+				if( path.startsWith( "//" ) ) {
+					sb.insert( 0, ":" ).insert( 0, this.url.getProtocol() );
+				}
 			}
-			else { // カレントディレクトリから
-				String t = this.url.getPath();
-
-				// カレントパスがファイルであればカレントディレクトリパスを求める
-				String ts[] = t.split( "/" );
-				if( ts.length != 0 && ts[ts.length - 1].contains( "." ) ) {
-					StringBuilder tb = new StringBuilder();
-					for( int i = 0; i < ts.length - 1; i++ ) {
-						tb.append( ts[i] ).append( "/" );
+			else { // 相対パス
+				sb.append( this.url.getProtocol() ).append( "://" ).append( this.url.getHost() );
+				if( path.startsWith( "/" ) ) { // ルートから
+					sb.append( path );
+				}
+				else { // カレントディレクトリから
+					String t = this.url.getPath();
+	
+					// カレントパスがファイルであればカレントディレクトリパスを求める
+					String ts[] = t.split( "/" );
+					if( ts.length != 0 && ts[ts.length - 1].contains( "." ) ) {
+						StringBuilder tb = new StringBuilder();
+						for( int i = 0; i < ts.length - 1; i++ ) {
+							tb.append( ts[i] ).append( "/" );
+						}
+						t = tb.toString();
 					}
-					t = tb.toString();
+	
+					if( !t.startsWith( "/" ) ) {
+						sb.append( "/" );
+					}
+					sb.append( t );
+	
+					if( !sb.toString().endsWith( "/" ) ) {
+						sb.append( "/" );
+					}
+					sb.append( path );
 				}
-
-				if( !t.startsWith( "/" ) ) {
-					sb.append( "/" );
-				}
-				sb.append( t );
-
-				if( !sb.toString().endsWith( "/" ) ) {
-					sb.append( "/" );
-				}
-				sb.append( path );
 			}
+			return sb.toString();
 		}
-		return sb.toString();
+	*/
+
+	private String makeFullPath( final String path ) {
+
+		URI uri;
+		try {
+			uri = new URI( url.toString() );
+		}
+		catch( URISyntaxException e ) {
+			Log.e( getClass(), "URISyntaxException in makeFullPath : new URI : " + e );
+			return null;
+		}
+
+		return uri.resolve( path ).toString();
 	}
 
 	private String getExtension( Element e, String path ) {
@@ -194,7 +217,11 @@ class Page implements Runnable {
 			else
 				return null;
 		}
-		String[] sp = path.split( "#" );
+		String[] sp = path.split( "/" );
+		if( sp.length == 0 )
+			return null;
+		path = sp[sp.length - 1];
+		sp = path.split( "#" );
 		if( sp.length == 0 )
 			return null;
 		path = sp[0];
@@ -203,7 +230,7 @@ class Page implements Runnable {
 			return null;
 		path = sp[0];
 		sp = path.split( "\\." );
-		if( sp.length == 0 )
+		if( sp.length <= 1 )
 			return null;
 		return sp[sp.length - 1];
 	}

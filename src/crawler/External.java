@@ -58,5 +58,7 @@ class External implements Runnable {
 		if( isCss ) {
 			new CssExternal( this.url, this.file ).process();
 		}
+
+		//		Log.v( getClass(), "finish '" + url + "'" );
 	}
 }
