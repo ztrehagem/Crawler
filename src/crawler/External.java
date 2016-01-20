@@ -25,7 +25,7 @@ class External implements Runnable {
 	public void run() {
 
 		try {
-			Log.v( getClass(), "save start '" + file );
+			//			Log.v( getClass(), "save start '" + file );
 			if( !file.createNewFile() ) {
 				Log.e( getClass(), "This file is already exist '" + file + "'" );
 				return;
@@ -48,7 +48,7 @@ class External implements Runnable {
 			}
 		}
 		catch( Exception e ) {
-			Log.e( getClass(), "Exception on External '" + url + "'" );
+			Log.e( getClass(), "Exception on External '" + url + "' -> '" + file + "'" );
 			e.printStackTrace();
 		}
 	}

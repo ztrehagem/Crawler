@@ -46,7 +46,7 @@ class Page implements Runnable {
 
 	@Override
 	public void run() {
-		Log.v( getClass(), "start '" + this.url + "'" );
+		//		Log.v( getClass(), "start '" + this.url + "'" );
 
 		try {
 			this.dir.mkdir();
@@ -75,9 +75,8 @@ class Page implements Runnable {
 		for( Element e : src.getAllElements( tag ) ) {
 
 			String path = e.getAttributeValue( attrname );
-			if( !isExternalLink( path ) ) {
+			if( !isExternalLink( path ) )
 				continue;
-			}
 
 			path = makeFullPath( path );
 			String outputFilename;
@@ -107,9 +106,8 @@ class Page implements Runnable {
 		for( Element e : src.getAllElements( tag ) ) {
 
 			String path = e.getAttributeValue( attrname );
-			if( !isExternalLink( path ) ) {
+			if( !isExternalLink( path ) )
 				continue;
-			}
 
 			path = makeFullPath( path );
 			final PageInfo i = master.addPageList( path );
@@ -211,7 +209,8 @@ class Page implements Runnable {
 	}
 
 	private boolean isExternalLink( String ref ) {
-		return ref != null && !ref.startsWith( "#" ) && !ref.startsWith( "javascript:" );
+		return ref != null && !ref.startsWith( "#" ) && !ref.startsWith( "javascript:" )
+			&& !ref.startsWith( "mailto:" );
 	}
 
 	private void savePage() throws IOException {
