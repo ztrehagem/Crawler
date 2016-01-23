@@ -1,7 +1,6 @@
 package crawler2;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 
@@ -16,7 +15,7 @@ class Tools {
 		try {
 			result = new URI( from ).resolve( to ).toString();
 		}
-		catch( URISyntaxException e ) {
+		catch( Exception e ) {
 
 		}
 		return result;

@@ -15,7 +15,7 @@ class ThreadMaster {
 	private final BlockingQueue<Future<?>>	q;
 
 	public ThreadMaster() {
-		exe = Executors.newFixedThreadPool( 10 );
+		exe = Executors.newFixedThreadPool( 16 );
 		q = new ArrayBlockingQueue<>( Short.MAX_VALUE );
 	}
 
