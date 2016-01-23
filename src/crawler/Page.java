@@ -4,12 +4,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import debug.Log;
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -22,7 +23,6 @@ class Page implements Runnable {
 
 	private final Master				master;
 
-	private final File					root;
 	private final File					dir;
 	private final URL					url;
 	private final int					pageId;
@@ -37,8 +37,7 @@ class Page implements Runnable {
 
 	Page( Master master, String url, int pageId, int h ) throws MalformedURLException {
 		this.master = master;
-		this.root = master.getRootDir();
-		this.dir = new File( this.root, String.valueOf( pageId ) );
+		this.dir = new File( master.root, String.valueOf( pageId ) );
 		this.url = new URL( url );
 		this.pageId = pageId;
 		this.h = h;
@@ -48,23 +47,23 @@ class Page implements Runnable {
 
 	@Override
 	public void run() {
-		Log.v( getClass(), "start '" + this.url + "'" );
+
+		this.dir.mkdir();
 
 		try {
-			this.dir.mkdir();
-
 			this.src = new Source( this.url );
-			this.od = new OutputDocument( src );
-
-			searchExternals();
-			searchPages();
-			savePage();
-			runThreads();
 		}
 		catch( IOException e ) {
-			Log.e( getClass(), "IOException on Page '" + url + "'" );
-			e.printStackTrace();
+			Log.e( getClass(), "Exception in run : new Source '" + this.url + "' : " + e );
+			return;
 		}
+
+		this.od = new OutputDocument( src );
+
+		searchExternals();
+		searchPages();
+		savePage();
+		runThreads();
 	}
 
 	void searchExternals() {
@@ -77,9 +76,8 @@ class Page implements Runnable {
 		for( Element e : src.getAllElements( tag ) ) {
 
 			String path = e.getAttributeValue( attrname );
-			if( path == null || path.startsWith( "#" ) || path.startsWith( "javascript:" ) ) {
+			if( !isExternalLink( path ) )
 				continue;
-			}
 
 			path = makeFullPath( path );
 			String outputFilename;
@@ -87,11 +85,13 @@ class Page implements Runnable {
 			if( !extfilemap.containsKey( path ) ) {
 				final String ext = getExtension( e, path );
 				if( ext == null ) {
-					Log.e( getClass(), "unknown MIME type '" + e );
+					//					Log.v( getClass(), "unknown MIME type '" + e );
 					continue;
 				}
 				outputFilename = ++fileId + "." + ext;
 				extfilemap.put( path, outputFilename );
+
+				//				Log.v( getClass(), "found ext '" + outputFilename + "' <- '" + path + "'" );
 			}
 			else {
 				outputFilename = extfilemap.get( path );
@@ -109,13 +109,13 @@ class Page implements Runnable {
 		for( Element e : src.getAllElements( tag ) ) {
 
 			String path = e.getAttributeValue( attrname );
-			if( path == null || path.startsWith( "#" ) || path.startsWith( "javascript:" ) ) {
+			if( !isExternalLink( path ) )
 				continue;
-			}
 
 			path = makeFullPath( path );
+			final String ext = getExtension( e, path );
 			final PageInfo i = master.addPageList( path );
-			final String outputFilename = i.pageId + ".html";
+			final String outputFilename = i.pageId + (ext == null ? ".html" : "." + ext);
 
 			if( this.h > 0 && !i.exist )
 				linkedpagemap.put( path, i.pageId );
@@ -141,46 +141,64 @@ class Page implements Runnable {
 		final String replaced = od.toString();
 
 		this.od.replace( e, replaced );
+
+		Log.v( getClass(), "replaced '" + e + "' -> '" + replaced + "'" );
 	}
 
-	private String makeFullPath( final String path ) {
-		StringBuilder sb = new StringBuilder();
-		if( path.contains( "//" ) ) { // 絶対パス
-			sb.append( path );
-			if( path.startsWith( "//" ) ) {
-				sb.insert( 0, ":" ).insert( 0, this.url.getProtocol() );
-			}
-		}
-		else { // 相対パス
-			sb.append( this.url.getProtocol() ).append( "://" ).append( this.url.getHost() );
-			if( path.startsWith( "/" ) ) { // ルートから
+	/*
+		private String makeFullPath( final String path ) {
+			StringBuilder sb = new StringBuilder();
+			if( path.contains( "//" ) ) { // 絶対パス
 				sb.append( path );
+				if( path.startsWith( "//" ) ) {
+					sb.insert( 0, ":" ).insert( 0, this.url.getProtocol() );
+				}
 			}
-			else { // カレントディレクトリから
-				String t = this.url.getPath();
-
-				// カレントパスがファイルであればカレントディレクトリパスを求める
-				String ts[] = t.split( "/" );
-				if( ts.length != 0 && ts[ts.length - 1].contains( "." ) ) {
-					StringBuilder tb = new StringBuilder();
-					for( int i = 0; i < ts.length - 1; i++ ) {
-						tb.append( ts[i] ).append( "/" );
+			else { // 相対パス
+				sb.append( this.url.getProtocol() ).append( "://" ).append( this.url.getHost() );
+				if( path.startsWith( "/" ) ) { // ルートから
+					sb.append( path );
+				}
+				else { // カレントディレクトリから
+					String t = this.url.getPath();
+	
+					// カレントパスがファイルであればカレントディレクトリパスを求める
+					String ts[] = t.split( "/" );
+					if( ts.length != 0 && ts[ts.length - 1].contains( "." ) ) {
+						StringBuilder tb = new StringBuilder();
+						for( int i = 0; i < ts.length - 1; i++ ) {
+							tb.append( ts[i] ).append( "/" );
+						}
+						t = tb.toString();
 					}
-					t = tb.toString();
+	
+					if( !t.startsWith( "/" ) ) {
+						sb.append( "/" );
+					}
+					sb.append( t );
+	
+					if( !sb.toString().endsWith( "/" ) ) {
+						sb.append( "/" );
+					}
+					sb.append( path );
 				}
-
-				if( !t.startsWith( "/" ) ) {
-					sb.append( "/" );
-				}
-				sb.append( t );
-
-				if( !sb.toString().endsWith( "/" ) ) {
-					sb.append( "/" );
-				}
-				sb.append( path );
 			}
+			return sb.toString();
 		}
-		return sb.toString();
+	*/
+
+	private String makeFullPath( final String path ) {
+
+		URI uri;
+		try {
+			uri = new URI( url.toString() );
+		}
+		catch( URISyntaxException e ) {
+			Log.e( getClass(), "URISyntaxException in makeFullPath : new URI : " + e );
+			return null;
+		}
+
+		return uri.resolve( path ).toString();
 	}
 
 	private String getExtension( Element e, String path ) {
@@ -198,7 +216,11 @@ class Page implements Runnable {
 			else
 				return null;
 		}
-		String[] sp = path.split( "#" );
+		String[] sp = path.split( "/" );
+		if( sp.length == 0 )
+			return null;
+		path = sp[sp.length - 1];
+		sp = path.split( "#" );
 		if( sp.length == 0 )
 			return null;
 		path = sp[0];
@@ -207,25 +229,36 @@ class Page implements Runnable {
 			return null;
 		path = sp[0];
 		sp = path.split( "\\." );
-		if( sp.length == 0 )
+		if( sp.length <= 1 )
 			return null;
 		return sp[sp.length - 1];
 	}
 
-	private void savePage() throws IOException {
-		final File file = new File( root, this.pageId + ".html" );
-		if( !file.createNewFile() ) {
-			Log.e( getClass(), "failed create html file" );
-			return;
-		}
-
-		FileWriter w = new FileWriter( file );
-		w.write( od.toString() );
-		w.flush();
-		w.close();
+	private boolean isExternalLink( String ref ) {
+		return ref != null && !ref.startsWith( "#" ) && !ref.startsWith( "javascript:" )
+			&& !ref.startsWith( "mailto:" );
 	}
 
-	void runThreads() {
+	private void savePage() {
+		final File file = new File( master.root, this.pageId + ".html" );
+		try {
+			file.createNewFile();
+		}
+		catch( IOException e ) {
+			Log.e( getClass(), "Exception in savePage : createFile() '" + file + "' : " + e );
+		}
+		try {
+			FileWriter w = new FileWriter( file );
+			w.write( od.toString() );
+			w.flush();
+			w.close();
+		}
+		catch( IOException e ) {
+			Log.e( getClass(), "Exception in savePage : saving '" + url + "' : " + e );
+		}
+	}
+
+	private void runThreads() {
 		ArrayList<Thread> tl = new ArrayList<>();
 
 		// Pages
@@ -234,8 +267,7 @@ class Page implements Runnable {
 				tl.add( new Thread( new Page( master, e.getKey(), e.getValue(), h - 1 ) ) );
 			}
 			catch( MalformedURLException exc ) {
-				Log.e( getClass(), "Exception on create page" );
-				exc.printStackTrace();
+				Log.e( getClass(), "Exception in runThreads : pages '" + e + "' : " + exc );
 			}
 		}
 
@@ -245,8 +277,7 @@ class Page implements Runnable {
 				tl.add( new Thread( new External( e.getKey(), new File( dir, e.getValue() ) ) ) );
 			}
 			catch( MalformedURLException exc ) {
-				Log.e( getClass(), "Exception on create external" );
-				exc.printStackTrace();
+				Log.e( getClass(), "Exception in runThreads : exts '" + e + "' : " + exc );
 			}
 		}
 
@@ -259,8 +290,7 @@ class Page implements Runnable {
 				t.join();
 			}
 			catch( InterruptedException e ) {
-				Log.e( getClass(), "Exception on thread joining" );
-				e.printStackTrace();
+				Log.e( getClass(), "Exception in runThreads : joining : " + e );
 			}
 		}
 	}

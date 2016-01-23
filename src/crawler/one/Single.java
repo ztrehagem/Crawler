@@ -9,7 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
-import debug.Log;
+import crawler.Log;
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -18,16 +18,16 @@ import net.htmlparser.jericho.Source;
 
 public class Single {
 
-	private final File	dir;
-	private final URL	url;
+	private final File			dir;
+	private final URL			url;
 
-	private Source			src;
-	private OutputDocument	od;
+	private Source				src;
+	private OutputDocument		od;
 
-	private int		fileId		= 0;
-	private Object	fileIdMutex	= new Object();
+	private int					fileId		= 0;
+	private Object				fileIdMutex	= new Object();
 
-	private Map<String, String> extfilemap;
+	private Map<String, String>	extfilemap;
 
 	public Single( String url ) throws Exception {
 		this.dir = new File( "result/" + String.valueOf( System.currentTimeMillis() ) );
