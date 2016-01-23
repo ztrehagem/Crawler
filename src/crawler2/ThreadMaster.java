@@ -7,7 +7,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import debug.Log;
 
 class ThreadMaster {
 
@@ -15,7 +14,7 @@ class ThreadMaster {
 	private final BlockingQueue<Future<?>>	q;
 
 	ThreadMaster() {
-		exe = Executors.newFixedThreadPool( 16 );
+		exe = Executors.newFixedThreadPool( Crawler.ConnectionNumLimit );
 		q = new ArrayBlockingQueue<>( Short.MAX_VALUE );
 	}
 

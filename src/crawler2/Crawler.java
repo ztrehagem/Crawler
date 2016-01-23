@@ -5,7 +5,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import debug.Log;
+import net.htmlparser.jericho.MasonTagTypes;
+import net.htmlparser.jericho.MicrosoftConditionalCommentTagTypes;
+import net.htmlparser.jericho.PHPTagTypes;
 
 public class Crawler {
 
@@ -14,17 +16,23 @@ public class Crawler {
 	final ThreadMaster		t;
 	final File				root;
 
-	private final String	url;
-	private final int		lmt;
+	public static int		ConnectionNumLimit	= 16;
+	public static String	ResultDirectoryPath	= "./result";
+	public static boolean	PrintLog			= false;
 
-	public Crawler( String url, int lmt ) throws URISyntaxException, MalformedURLException, InterruptedException {
+	private final String	url;
+	private final int		level;
+
+	public Crawler( String url, int level ) throws URISyntaxException, MalformedURLException, InterruptedException {
+		initialize_Jericho();
+
 		url = (url.contains( ":" ) ? "" : "file:") + url;
 		url = url + (new URI( url ).getPath().startsWith( "/" ) ? "" : "/");
 
 		this.url = url;
-		this.lmt = lmt;
+		this.level = level;
 
-		this.root = new File( "result/" + String.valueOf( System.currentTimeMillis() ) + "-"
+		this.root = new File( new File( ResultDirectoryPath ), String.valueOf( System.currentTimeMillis() ) + "-"
 			+ new URL( url ).getHost().replace( ':', '-' ).replace( '.', '-' ) );
 		this.root.mkdirs();
 
@@ -34,20 +42,25 @@ public class Crawler {
 
 		Log.v( getClass(), "target '" + url + "'" );
 		Log.v( getClass(), "root '" + this.root + "'" );
-
-		process();
 	}
 
-	private void process() throws InterruptedException {
+	public void process() throws InterruptedException {
 		Log.v( getClass(), "start" );
 
 		h.makeID( url, true );
-		t.exec( new HTMLSaveRunner( this, url, lmt ) );
+		t.exec( new HTMLSaveRunner( this, url, level ) );
 		t.awaitEmpty();
 		if( !t.shutdown() ) {
-			Log.e( getClass(), "thread pool shutdowned is not terminated" );
+			Log.e( getClass(), "thread pool is not terminated" );
 		}
 
 		Log.v( getClass(), "done!" );
+	}
+
+	private static void initialize_Jericho() {
+		MicrosoftConditionalCommentTagTypes.register();
+		PHPTagTypes.register();
+		PHPTagTypes.PHP_SHORT.deregister();
+		MasonTagTypes.register();
 	}
 }

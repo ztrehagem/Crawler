@@ -2,7 +2,6 @@ package crawler2;
 
 import java.util.Map;
 import java.util.regex.Pattern;
-import debug.Log;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.OutputDocument;
 import net.htmlparser.jericho.Source;

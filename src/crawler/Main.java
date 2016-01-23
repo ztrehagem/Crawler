@@ -1,7 +1,6 @@
 package crawler;
 
 import java.net.URI;
-import debug.Log;
 import net.htmlparser.jericho.MasonTagTypes;
 import net.htmlparser.jericho.MicrosoftConditionalCommentTagTypes;
 import net.htmlparser.jericho.PHPTagTypes;

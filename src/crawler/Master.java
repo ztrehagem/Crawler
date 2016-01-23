@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
-import debug.Log;
 
 public class Master {
 	// Master -> Page

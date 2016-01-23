@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import debug.Log;
 import net.htmlparser.jericho.OutputDocument;
 import net.htmlparser.jericho.Source;
 

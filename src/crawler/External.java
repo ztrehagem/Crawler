@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import debug.Log;
 
 class External implements Runnable {
 	// single External
