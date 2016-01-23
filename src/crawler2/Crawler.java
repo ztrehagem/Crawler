@@ -7,7 +7,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import debug.Log;
 
-public class Master {
+public class Crawler {
 
 	final FileMaster		f;
 	final HTMLMaster		h;
@@ -17,7 +17,7 @@ public class Master {
 	private final String	url;
 	private final int		lmt;
 
-	public Master( String url, int lmt ) throws URISyntaxException, MalformedURLException, InterruptedException {
+	public Crawler( String url, int lmt ) throws URISyntaxException, MalformedURLException, InterruptedException {
 		url = (url.contains( ":" ) ? "" : "file:") + url;
 		url = url + (new URI( url ).getPath().startsWith( "/" ) ? "" : "/");
 

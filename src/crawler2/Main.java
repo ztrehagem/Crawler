@@ -28,7 +28,7 @@ public class Main {
 
 		initialize_Jericho();
 
-		new Master( url, h );
+		new Crawler( url, h );
 	}
 
 	private static void initialize_Jericho() {

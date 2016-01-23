@@ -10,15 +10,15 @@ import net.htmlparser.jericho.Source;
 
 class HTMLSaveRunner implements Runnable {
 
-	private final Master	m;
+	private final Crawler	master;
 	private final String	url;
 	private final File		file;
 	private final int		h;
 
-	HTMLSaveRunner( final Master m, final String url, final int h ) {
-		this.m = m;
+	HTMLSaveRunner( final Crawler master, final String url, final int h ) {
+		this.master = master;
 		this.url = url;
-		this.file = new File( m.root, m.h.getFileName( url ) );
+		this.file = new File( master.root, master.h.getFileName( url ) );
 		this.h = h - 1;
 		if( this.h < 0 )
 			throw new RuntimeException();
@@ -36,7 +36,7 @@ class HTMLSaveRunner implements Runnable {
 			return;
 		}
 
-		save( new HTMLRefactor( m, url, src, h ).getResult() );
+		save( new HTMLRefactor( master, url, src, h ).getResult() );
 	}
 
 	private void save( final OutputDocument od ) {

@@ -10,11 +10,11 @@ import debug.Log;
 
 class CSSRefactor {
 
-	private final Master	master;
+	private final Crawler	master;
 	private final String	url;
 	private final File		file;
 
-	CSSRefactor( Master master, String url, File file ) {
+	CSSRefactor( Crawler master, String url, File file ) {
 		this.master = master;
 		this.url = url;
 		this.file = file;
@@ -50,7 +50,7 @@ class CSSRefactor {
 		}
 	}
 
-	static String lineRefactoring( final String line, final String url, final Master master ) {
+	static String lineRefactoring( final String line, final String url, final Crawler master ) {
 		StringBuilder lbuf = new StringBuilder();
 		int last = 0;
 		int head = 0;

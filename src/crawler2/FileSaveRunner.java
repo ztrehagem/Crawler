@@ -12,12 +12,12 @@ import debug.Log;
 
 class FileSaveRunner implements Runnable {
 
-	private final Master	master;
+	private final Crawler	master;
 	private final String	url;
 	private final File		file;
 	private final boolean	isCss;
 
-	FileSaveRunner( final Master master, final String url ) {
+	FileSaveRunner( final Crawler master, final String url ) {
 		this.master = master;
 		this.url = url;
 		this.file = new File( master.root, master.f.getFileName( url ) );

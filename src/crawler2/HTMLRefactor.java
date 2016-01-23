@@ -9,12 +9,12 @@ import net.htmlparser.jericho.Source;
 
 class HTMLRefactor {
 
-	private final Master			master;
+	private final Crawler			master;
 	private final String			url;
 	private final int				h;
 	private final OutputDocument	od;
 
-	HTMLRefactor( final Master master, final String url, final Source src, final int h ) {
+	HTMLRefactor( final Crawler master, final String url, final Source src, final int h ) {
 		this.master = master;
 		this.url = url;
 		this.h = h;
