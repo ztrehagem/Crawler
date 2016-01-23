@@ -10,7 +10,7 @@ class Tools {
 
 	}
 
-	public static String makeFullPath( String from, String to ) {
+	static String makeFullPath( String from, String to ) {
 		String result = null;
 		try {
 			result = new URI( from ).resolve( to ).toString();
@@ -21,7 +21,7 @@ class Tools {
 		return result;
 	}
 
-	public static String getExtension( String path ) {
+	static String getExtension( String path ) {
 		String[] sp;
 		String ext = path;
 
@@ -50,7 +50,7 @@ class Tools {
 		return ext.equals( "" ) ? null : ext;
 	}
 
-	public static String getExtension( Element e ) {
+	static String getExtension( Element e ) {
 		final String en = e.getName().toLowerCase();
 		if( en.equals( HTMLElementName.LINK ) ) {
 			final String rel = e.getAttributeValue( "rel" );
@@ -69,7 +69,7 @@ class Tools {
 		return null;
 	}
 
-	public static boolean isPage( String href ) {
+	static boolean isPage( String href ) {
 		// TODO 自動生成されたメソッド・スタブ
 		return false;
 	}

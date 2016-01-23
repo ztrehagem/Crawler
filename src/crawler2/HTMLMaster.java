@@ -8,23 +8,23 @@ class HTMLMaster {
 
 	private final Map<String, String> map;
 
-	public HTMLMaster() {
+	HTMLMaster() {
 		this.map = new HashMap<>();
 	}
 
-	public String getFileName( final String url ) {
+	String getFileName( final String url ) {
 		return map.get( url );
 	}
 
-	public boolean has( final String url ) {
+	boolean has( final String url ) {
 		return this.map.containsKey( url );
 	}
 
-	public boolean makeID( final String url ) {
+	boolean makeID( final String url ) {
 		return this.makeID( url, false );
 	}
 
-	synchronized public boolean makeID( String url, boolean start ) {
+	synchronized boolean makeID( String url, boolean start ) {
 		if( map.containsKey( url ) ) {
 			return false;
 		}

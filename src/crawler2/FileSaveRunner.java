@@ -17,7 +17,7 @@ class FileSaveRunner implements Runnable {
 	private final File		file;
 	private final boolean	isCss;
 
-	public FileSaveRunner( final Master master, final String url ) {
+	FileSaveRunner( final Master master, final String url ) {
 		this.master = master;
 		this.url = url;
 		this.file = new File( master.root, master.f.getFileName( url ) );

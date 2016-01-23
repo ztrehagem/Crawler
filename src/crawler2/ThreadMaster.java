@@ -14,16 +14,16 @@ class ThreadMaster {
 	private final ExecutorService			exe;
 	private final BlockingQueue<Future<?>>	q;
 
-	public ThreadMaster() {
+	ThreadMaster() {
 		exe = Executors.newFixedThreadPool( 16 );
 		q = new ArrayBlockingQueue<>( Short.MAX_VALUE );
 	}
 
-	public void exec( Callable<?> c ) {
+	void exec( Callable<?> c ) {
 		offer( exe.submit( c ) );
 	}
 
-	public void exec( Runnable r ) {
+	void exec( Runnable r ) {
 		offer( exe.submit( r ) );
 	}
 
@@ -36,7 +36,7 @@ class ThreadMaster {
 		}
 	}
 
-	public void awaitEmpty() {
+	void awaitEmpty() {
 		Future<?> f;
 		while( (f = q.poll()) != null ) {
 			try {
@@ -52,7 +52,7 @@ class ThreadMaster {
 		}
 	}
 
-	public boolean shutdown() {
+	boolean shutdown() {
 		try {
 			Thread.sleep( 100 );
 		}

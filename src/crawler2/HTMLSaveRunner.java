@@ -15,7 +15,7 @@ class HTMLSaveRunner implements Runnable {
 	private final File		file;
 	private final int		h;
 
-	public HTMLSaveRunner( final Master m, final String url, final int h ) {
+	HTMLSaveRunner( final Master m, final String url, final int h ) {
 		this.m = m;
 		this.url = url;
 		this.file = new File( m.root, m.h.getFileName( url ) );

@@ -9,15 +9,15 @@ class FileMaster {
 
 	private final Map<String, String> map;
 
-	public FileMaster() {
+	FileMaster() {
 		this.map = new HashMap<>();
 	}
 
-	public String getFileName( final String url ) {
+	String getFileName( final String url ) {
 		return map.get( url );
 	}
 
-	public TriBool makeID( final String url, final Element e ) {
+	TriBool makeID( final String url, final Element e ) {
 		String ext = Tools.getExtension( e );
 		if( ext == null ) {
 			ext = Tools.getExtension( url );
@@ -28,7 +28,7 @@ class FileMaster {
 		return this.makeID( url, ext ) ? TriBool.TRUE : TriBool.FALSE;
 	}
 
-	synchronized public boolean makeID( final String url, final String extension ) {
+	synchronized boolean makeID( final String url, final String extension ) {
 		if( map.containsKey( url ) ) {
 			return false;
 		}

@@ -1,5 +1,5 @@
 package crawler2;
 
-public enum TriBool {
+enum TriBool {
 	TRUE, FALSE, ERROR
 }

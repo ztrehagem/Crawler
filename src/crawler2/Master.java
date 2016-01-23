@@ -9,13 +9,13 @@ import debug.Log;
 
 public class Master {
 
-	public final FileMaster		f;
-	public final HTMLMaster		h;
-	public final ThreadMaster	t;
-	public final File			root;
+	final FileMaster		f;
+	final HTMLMaster		h;
+	final ThreadMaster		t;
+	final File				root;
 
-	private final String		url;
-	private final int			lmt;
+	private final String	url;
+	private final int		lmt;
 
 	public Master( String url, int lmt ) throws URISyntaxException, MalformedURLException, InterruptedException {
 		url = (url.contains( ":" ) ? "" : "file:") + url;
