@@ -56,11 +56,11 @@ class FileSaveRunner implements Runnable {
 			in.close();
 		}
 		catch( FileNotFoundException e ) {
-			Log.e( getClass(), "FileNotFoundException in run : ExtFileSaving '" + file + "' <- '" + url + "' : " + e );
+			Log.e( getClass(), "FileNotFound '" + url + "' : " + e );
 			return;
 		}
 		catch( IOException e ) {
-			Log.e( getClass(), "Exception in run : ExtFileSaving '" + url + "': " + e );
+			Log.e( getClass(), "Exception in run : FileSaving '" + url + "': " + e );
 			return;
 		}
 

@@ -25,6 +25,7 @@ class HTMLRefactor {
 		scan( HTMLElementName.IMG, new HTMLTagRefactorIMG( master, url, h, od ) );
 		scan( HTMLElementName.LINK, new HTMLTagRefactorLINK( master, url, h, od ) );
 		scan( HTMLElementName.SCRIPT, new HTMLTagRefactorSCRIPT( master, url, h, od ) );
+		scan( HTMLElementName.A, new HTMLTagRefactorA( master, url, h, od ) );
 	}
 
 	OutputDocument getResult() {

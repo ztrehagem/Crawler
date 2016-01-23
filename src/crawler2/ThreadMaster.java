@@ -1,7 +1,7 @@
 package crawler2;
 
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -11,22 +11,29 @@ import debug.Log;
 
 class ThreadMaster {
 
-	private final ExecutorService	exe;
-	private final Queue<Future<?>>	q;
+	private final ExecutorService			exe;
+	private final BlockingQueue<Future<?>>	q;
 
 	public ThreadMaster() {
-		exe = Executors.newCachedThreadPool();
-		q = new ArrayBlockingQueue<>( Byte.MAX_VALUE );
+		exe = Executors.newFixedThreadPool( 10 );
+		q = new ArrayBlockingQueue<>( Short.MAX_VALUE );
 	}
 
 	public void exec( Callable<?> c ) {
-		if( !q.offer( exe.submit( c ) ) )
-			Log.e( getClass(), "failed enqueue" );
+		offer( exe.submit( c ) );
 	}
 
 	public void exec( Runnable r ) {
-		if( !q.offer( exe.submit( r ) ) )
-			Log.e( getClass(), "failed enqueue" );
+		offer( exe.submit( r ) );
+	}
+
+	private void offer( Future<?> f ) {
+		try {
+			q.put( f );
+		}
+		catch( InterruptedException e ) {
+			Log.e( getClass(), "InterruptedException in offer : " + e );
+		}
 	}
 
 	public void awaitEmpty() {
