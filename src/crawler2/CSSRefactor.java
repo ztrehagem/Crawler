@@ -30,39 +30,7 @@ class CSSRefactor {
 			String line;
 
 			while( (line = r.readLine()) != null ) {
-				StringBuilder lbuf = new StringBuilder();
-				int last = 0;
-				int head = 0;
-
-				while( (head = line.indexOf( "url(", last )) != -1 ) {
-					lbuf.append( line.substring( last, head ) );
-
-					final boolean quote = line.charAt( head + 4 ) == '\'' || line.charAt( head + 4 ) == '"';
-					final int start = head + 4 + (quote ? 1 : 0);
-					final int end = line.indexOf( ")", start ) - (quote ? 1 : 0);
-
-					last = end + 1 + (quote ? 1 : 0);
-
-					final String target = line.substring( start, end );
-
-					final String ext = Tools.getExtension( target );
-					if( ext == null ) {
-						lbuf.append( line.substring( head, last ) );
-						continue;
-					}
-
-					final String fullpath = Tools.makeFullPath( url, target );
-					if( master.f.makeID( fullpath, ext ) ) {
-						master.t.exec( new FileSaveRunner( master, fullpath ) );
-					}
-
-					final String result = "url(\"" + master.f.getFileName( fullpath ) + "\")";
-					//					Log.v( getClass(), "css modify '" + target + "' -> '" + result + "'" );
-					lbuf.append( result );
-				}
-				lbuf.append( line.substring( last ) );
-
-				buf.append( lbuf ).append( '\n' );
+				buf.append( lineRefactoring( line, url, master ) + "\n" );
 			}
 			r.close();
 		}
@@ -80,5 +48,41 @@ class CSSRefactor {
 		catch( IOException e ) {
 			Log.e( getClass(), "css writing exception : " + e );
 		}
+	}
+
+	static String lineRefactoring( final String line, final String url, final Master master ) {
+		StringBuilder lbuf = new StringBuilder();
+		int last = 0;
+		int head = 0;
+
+		while( (head = line.indexOf( "url(", last )) != -1 ) {
+			lbuf.append( line.substring( last, head ) );
+
+			final boolean quote = line.charAt( head + 4 ) == '\'' || line.charAt( head + 4 ) == '"';
+			final int start = head + 4 + (quote ? 1 : 0);
+			final int end = line.indexOf( ")", start ) - (quote ? 1 : 0);
+
+			last = end + 1 + (quote ? 1 : 0);
+
+			final String target = line.substring( start, end );
+
+			final String ext = Tools.getExtension( target );
+			if( ext == null ) {
+				lbuf.append( line.substring( head, last ) );
+				continue;
+			}
+
+			final String fullpath = Tools.makeFullPath( url, target );
+			if( master.f.makeID( fullpath, ext ) ) {
+				master.t.exec( new FileSaveRunner( master, fullpath ) );
+			}
+
+			final String result = "url(\"" + master.f.getFileName( fullpath ) + "\")";
+			//					Log.v( getClass(), "css modify '" + target + "' -> '" + result + "'" );
+			lbuf.append( result );
+		}
+		lbuf.append( line.substring( last ) );
+
+		return lbuf.toString();
 	}
 }

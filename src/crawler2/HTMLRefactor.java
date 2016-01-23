@@ -18,7 +18,7 @@ class HTMLRefactor {
 		this.master = master;
 		this.url = url;
 		this.h = h;
-		this.od = new OutputDocument( src );
+		this.od = new OutputDocument( new Source( src.toString().replace( "\n", "" ) ) );
 
 		this.refactoring();
 	}
@@ -30,6 +30,7 @@ class HTMLRefactor {
 		tag( "a", "href" );
 		tag( "iframe", "src" );
 		attribute( "background" );
+		style();
 	}
 
 	OutputDocument getResult() {
@@ -107,7 +108,6 @@ class HTMLRefactor {
 
 	private void attribute( final String attrname ) {
 		for( Element e : od.getSegment().getAllElements( attrname, Pattern.compile( ".*" ) ) ) {
-			Log.v( getClass(), "attribute '" + attrname + "' : " + e );
 
 			final String path = e.getAttributeValue( attrname );
 			if( path == null )
@@ -126,6 +126,19 @@ class HTMLRefactor {
 				master.t.exec( new FileSaveRunner( master, fullpath ) );
 
 			this.modify( e, attrname, master.f.getFileName( fullpath ) );
+		}
+	}
+
+	private void style() {
+		for( Element e : od.getSegment().getAllElements( "style", Pattern.compile( ".*" ) ) ) {
+
+			final String source = e.getAttributeValue( "style" );
+			if( source == null )
+				continue;
+
+			final String result = CSSRefactor.lineRefactoring( source, url, master );
+
+			this.modify( e, "style", result );
 		}
 	}
 }
