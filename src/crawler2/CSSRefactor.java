@@ -1,4 +1,4 @@
-package crawler2.css;
+package crawler2;
 
 
 public class CSSRefactor {

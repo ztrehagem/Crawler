@@ -1,6 +1,5 @@
 package crawler2;
 
-import java.net.URI;
 import debug.Log;
 import net.htmlparser.jericho.MasonTagTypes;
 import net.htmlparser.jericho.MicrosoftConditionalCommentTagTypes;
@@ -9,7 +8,8 @@ import net.htmlparser.jericho.PHPTagTypes;
 public class Main {
 
 	public static void main( String[] args ) throws Exception {
-		String url = "http://www.apple.com/";
+		//		String url = "http://www.apple.com/";
+		String url = "http://www.ise.shibaura-it.ac.jp/";
 		int h = 1;
 
 		if( args.length == 0 ) {
@@ -22,12 +22,6 @@ public class Main {
 		else if( args.length >= 2 ) {
 			url = args[1];
 		}
-
-		if( !url.contains( ":" ) ) {
-			url = "file:" + url;
-		}
-
-		url = url + (new URI( url ).getPath().startsWith( "/" ) ? "" : "/");
 
 		initialize_Jericho();
 

@@ -2,31 +2,51 @@ package crawler2;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import debug.Log;
 
 public class Master {
 
-	final File	root;
+	public final FileMaster		f;
+	public final HTMLMaster		h;
+	public final ThreadMaster	t;
+	public final File			root;
 
-	final URL	url;
-	final int	h;
+	private final String		url;
+	private final int			lmt;
 
-	public Master( String url, int h ) throws MalformedURLException {
-		this.url = new URL( url );
-		this.h = h;
+	public Master( String url, int lmt ) throws URISyntaxException, MalformedURLException, InterruptedException {
+		url = (url.contains( ":" ) ? "" : "file:") + url;
+		url = url + (new URI( url ).getPath().startsWith( "/" ) ? "" : "/");
+
+		this.url = url;
+		this.lmt = lmt;
 
 		this.root = new File( "result/" + String.valueOf( System.currentTimeMillis() ) + "-"
-			+ this.url.getHost().replace( ':', '-' ).replace( '.', '-' ) );
+			+ new URL( url ).getHost().replace( ':', '-' ).replace( '.', '-' ) );
 		this.root.mkdirs();
 
-		Log.v( getClass(), "target '" + url + "'\nroot '" + root + "'" );
+		this.f = new FileMaster();
+		this.h = new HTMLMaster();
+		this.t = new ThreadMaster();
+
+		Log.v( getClass(), "target '" + url + "'" );
+		Log.v( getClass(), "root '" + this.root + "'" );
 
 		process();
 	}
 
-	public void process() {
+	private void process() throws InterruptedException {
 		Log.v( getClass(), "start" );
+
+		h.makeID( url, true );
+		t.exec( new HTMLSaveRunner( this, url, lmt ) );
+		t.awaitEmpty();
+		if( !t.shutdown() ) {
+			Log.e( getClass(), "thread pool shutdowned is not terminated" );
+		}
 
 		Log.v( getClass(), "all done!" );
 	}
