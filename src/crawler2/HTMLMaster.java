@@ -16,6 +16,10 @@ class HTMLMaster {
 		return map.get( url );
 	}
 
+	public boolean has( final String url ) {
+		return this.map.containsKey( url );
+	}
+
 	public boolean makeID( final String url ) {
 		return this.makeID( url, false );
 	}

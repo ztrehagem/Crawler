@@ -8,11 +8,11 @@ import net.htmlparser.jericho.PHPTagTypes;
 public class Main {
 
 	public static void main( String[] args ) throws Exception {
-		//		String url = "http://www.apple.com/";
+		String url = "http://www.apple.com/";
 		//		String url = "http://www.ise.shibaura-it.ac.jp/";
 		//		String url = "http://dengekibunko.jp/newreleases/978-4-04-865133-2/";
-		String url = "http://www.comitia.co.jp/";
-		int h = 1;
+		//		String url = "http://www.comitia.co.jp/";
+		int h = 2;
 
 		if( args.length == 0 ) {
 			Log.v( Main.class, "using default '" + h + " " + url + "'" );

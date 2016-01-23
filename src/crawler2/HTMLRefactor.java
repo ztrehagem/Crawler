@@ -47,8 +47,17 @@ class HTMLRefactor {
 			if( isHTMLLinkTag( tag ) ) {
 				if( !isHTML( tag, fullpath ) )
 					continue;
-				if( master.h.makeID( fullpath ) && h > 0 )
-					master.t.exec( new HTMLSaveRunner( master, fullpath, h ) );
+				synchronized( master.h ) {
+					if( !master.h.has( fullpath ) ) {
+						if( h > 0 ) {
+							master.h.makeID( fullpath );
+							master.t.exec( new HTMLSaveRunner( master, fullpath, h ) );
+						}
+						else {
+							continue;
+						}
+					}
+				}
 				this.modify( e, attrname, master.h.getFileName( fullpath ) );
 			}
 			else {
@@ -72,7 +81,7 @@ class HTMLRefactor {
 		if( !path.startsWith( "http:" ) && !path.startsWith( "https:" ) )
 			return false;
 		final String ext = Tools.getExtension( path );
-		return ext == null || in( ext, new String[] { "html", "htm", "asp", "aspx", "php" } );
+		return ext == null || in( ext, new String[] { "html", "htm", "asp", "aspx", "php", "cgi" } );
 	}
 
 	private boolean in( final String s, final String[] a ) {
