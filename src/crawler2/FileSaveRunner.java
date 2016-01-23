@@ -12,11 +12,13 @@ import debug.Log;
 
 class FileSaveRunner implements Runnable {
 
+	private final Master	master;
 	private final String	url;
 	private final File		file;
 	private final boolean	isCss;
 
 	public FileSaveRunner( final Master master, final String url ) {
+		this.master = master;
 		this.url = url;
 		this.file = new File( master.root, master.f.getFileName( url ) );
 		this.isCss = this.file.getName().endsWith( ".css" );
@@ -65,7 +67,7 @@ class FileSaveRunner implements Runnable {
 		}
 
 		if( isCss ) {
-			new CSSRefactor();
+			new CSSRefactor( this.master, this.url, this.file );
 		}
 	}
 }
