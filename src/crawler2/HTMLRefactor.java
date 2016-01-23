@@ -9,20 +9,25 @@ class HTMLRefactor {
 
 	private final Master			master;
 	private final String			url;
-	private final Source			src;
 	private final int				h;
 	private final OutputDocument	od;
 
 	HTMLRefactor( final Master master, final String url, final Source src, final int h ) {
 		this.master = master;
 		this.url = url;
-		this.src = src;
 		this.h = h;
 		this.od = new OutputDocument( src );
+
+		this.refactoring();
 	}
 
-	OutputDocument refactoring() {
+	private void refactoring() {
 		scan( HTMLElementName.IMG, new HTMLTagRefactorIMG( master, url, h, od ) );
+		scan( HTMLElementName.LINK, new HTMLTagRefactorLINK( master, url, h, od ) );
+		scan( HTMLElementName.SCRIPT, new HTMLTagRefactorSCRIPT( master, url, h, od ) );
+	}
+
+	OutputDocument getResult() {
 		return this.od;
 	}
 

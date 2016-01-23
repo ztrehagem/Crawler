@@ -24,19 +24,24 @@ class Tools {
 
 	public static String getExtension( String path ) {
 		String[] sp;
-		String ext;
+		String ext = path;
+
 		try {
 			//			Log.v( Tools.class, "getExtension (original) '" + path + "'" );
-			sp = path.split( "\\/" );
+			if( ext.endsWith( "/" ) )
+				return null;
+			sp = ext.split( "\\/" );
 			ext = sp[sp.length - 1];
 			//			Log.v( Tools.class, "getExtension (/) '" + ext + "'" );
-			sp = path.split( "\\#" );
+			sp = ext.split( "\\#" );
 			ext = sp[0];
 			//			Log.v( Tools.class, "getExtension (#) '" + ext + "'" );
-			sp = path.split( "\\?" );
+			sp = ext.split( "\\?" );
 			ext = sp[0];
 			//			Log.v( Tools.class, "getExtension (?) '" + ext + "'" );
-			sp = path.split( "\\." );
+			if( !ext.contains( "." ) )
+				return null;
+			sp = ext.split( "\\." );
 			ext = sp[sp.length - 1];
 			//			Log.v( Tools.class, "getExtension (.) '" + ext + "'" );
 		}

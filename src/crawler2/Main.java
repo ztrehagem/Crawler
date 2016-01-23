@@ -10,14 +10,15 @@ public class Main {
 	public static void main( String[] args ) throws Exception {
 		//		String url = "http://www.apple.com/";
 		String url = "http://www.ise.shibaura-it.ac.jp/";
+		//		String url = "http://dengekibunko.jp/newreleases/978-4-04-865133-2/";
 		int h = 1;
 
 		if( args.length == 0 ) {
-			Log.e( Main.class, "using default '" + h + " " + url + "'" );
+			Log.v( Main.class, "using default '" + h + " " + url + "'" );
 		}
 		else if( args.length == 1 ) {
 			h = Integer.parseInt( args[0] );
-			Log.e( Main.class, "using default url '" + url + "'" );
+			Log.v( Main.class, "using default url '" + url + "'" );
 		}
 		else if( args.length >= 2 ) {
 			url = args[1];

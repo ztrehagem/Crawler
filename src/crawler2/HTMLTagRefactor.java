@@ -24,7 +24,7 @@ abstract class HTMLTagRefactor {
 	protected final void modifyRef( final Element e, final String attrname, final String value ) {
 		try {
 			Map<String, String> map = od.replace( e.getAttributes(), true );
-			map.put( attrname, value );
+			map.put( attrname.toLowerCase(), value );
 		}
 		catch( Exception exc ) {
 			Log.e( getClass(), "cant modifyRef : " + exc );

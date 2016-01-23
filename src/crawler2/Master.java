@@ -48,6 +48,6 @@ public class Master {
 			Log.e( getClass(), "thread pool shutdowned is not terminated" );
 		}
 
-		Log.v( getClass(), "all done!" );
+		Log.v( getClass(), "done!" );
 	}
 }

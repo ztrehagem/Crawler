@@ -4,9 +4,9 @@ import debug.Log;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.OutputDocument;
 
-class HTMLTagRefactorIMG extends HTMLTagRefactor {
+public class HTMLTagRefactorSCRIPT extends HTMLTagRefactor {
 
-	HTMLTagRefactorIMG( Master master, String url, int h, OutputDocument od ) {
+	protected HTMLTagRefactorSCRIPT( Master master, String url, int h, OutputDocument od ) {
 		super( master, url, h, od );
 	}
 
@@ -16,7 +16,6 @@ class HTMLTagRefactorIMG extends HTMLTagRefactor {
 
 		final String src = e.getAttributeValue( attrname );
 		if( src == null ) {
-			Log.e( getClass(), "img has no src attribute" );
 			return;
 		}
 
@@ -40,4 +39,5 @@ class HTMLTagRefactorIMG extends HTMLTagRefactor {
 
 		super.modifyRef( e, attrname, master.f.getFileName( fullpath ) );
 	}
+
 }

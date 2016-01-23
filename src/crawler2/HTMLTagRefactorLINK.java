@@ -4,23 +4,28 @@ import debug.Log;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.OutputDocument;
 
-class HTMLTagRefactorIMG extends HTMLTagRefactor {
+public class HTMLTagRefactorLINK extends HTMLTagRefactor {
 
-	HTMLTagRefactorIMG( Master master, String url, int h, OutputDocument od ) {
+	protected HTMLTagRefactorLINK( Master master, String url, int h, OutputDocument od ) {
 		super( master, url, h, od );
 	}
 
 	@Override
 	void refactoring( Element e ) {
-		final String attrname = "src";
-
-		final String src = e.getAttributeValue( attrname );
-		if( src == null ) {
-			Log.e( getClass(), "img has no src attribute" );
+		final String rel = e.getAttributeValue( "rel" );
+		if( rel == null || !rel.equals( "stylesheet" ) ) {
 			return;
 		}
 
-		final String fullpath = Tools.makeFullPath( pageurl, src );
+		final String attrname = "href";
+
+		final String href = e.getAttributeValue( attrname );
+		if( href == null ) {
+			Log.e( getClass(), "link has no href attribute" );
+			return;
+		}
+
+		final String fullpath = Tools.makeFullPath( pageurl, href );
 		if( fullpath == null ) {
 			Log.e( getClass(), "cant make fullpath" );
 			return;
@@ -28,7 +33,7 @@ class HTMLTagRefactorIMG extends HTMLTagRefactor {
 
 		final TriBool t = master.f.makeID( fullpath, e );
 		if( t == TriBool.ERROR ) {
-			Log.e( getClass(), "cant resolve extenesion '" + src + "'" );
+			Log.e( getClass(), "cant resolve extension '" + href + "'" );
 			return;
 		}
 
@@ -40,4 +45,5 @@ class HTMLTagRefactorIMG extends HTMLTagRefactor {
 
 		super.modifyRef( e, attrname, master.f.getFileName( fullpath ) );
 	}
+
 }
