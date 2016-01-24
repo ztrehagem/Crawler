@@ -25,8 +25,8 @@ public class Main {
 		Crawler.ConnectionNumLimit = 24;
 		Crawler.PrintLog = true;
 
-		System.out.println( "Crawler start" );
+		System.out.println( "\n----- Crawler start -----\n" );
 		new Crawler( url, level ).process();
-		System.out.println( "Crawler finish" );
+		System.out.println( "\n----- Crawler finish -----\n" );
 	}
 }

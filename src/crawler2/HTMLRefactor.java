@@ -47,7 +47,7 @@ class HTMLRefactor {
 				continue;
 
 			if( isHTMLLinkTag( tag ) ) {
-				if( !isHTML( tag, fullpath ) )
+				if( !isHTML( fullpath ) )
 					continue;
 				synchronized( master.h ) {
 					if( !master.h.has( fullpath ) ) {
@@ -76,14 +76,52 @@ class HTMLRefactor {
 		}
 	}
 
+	private void attribute( final String attrname ) {
+		for( Element e : od.getSegment().getAllElements( attrname, Pattern.compile( ".*" ) ) ) {
+
+			final String path = e.getAttributeValue( attrname );
+			if( path == null )
+				continue;
+
+			final String fullpath = Tools.makeFullPath( url, path );
+			if( fullpath == null )
+				continue;
+
+			String ext;
+			if( (ext = Tools.getExtension( path )) == null )
+				continue;
+
+			final boolean exist = !master.f.makeID( fullpath, ext );
+
+			if( !exist )
+				master.t.exec( new FileSaveRunner( master, fullpath ) );
+
+			this.modify( e, attrname, master.f.getFileName( fullpath ) );
+		}
+	}
+
+	private void style() {
+		final String attrname = "style";
+		for( Element e : od.getSegment().getAllElements( attrname, Pattern.compile( ".*" ) ) ) {
+
+			final String source = e.getAttributeValue( attrname );
+			if( source == null )
+				continue;
+
+			final String result = CSSRefactor.lineRefactoring( source, url, master );
+
+			this.modify( e, attrname, result );
+		}
+	}
+
 	private boolean isHTMLLinkTag( final String tag ) {
 		return in( tag, new String[] { "a", "iframe" } );
 	}
 
-	private boolean isHTML( final String tag, final String path ) {
-		if( !path.startsWith( "http:" ) && !path.startsWith( "https:" ) )
+	private boolean isHTML( final String fullpath ) {
+		if( !fullpath.startsWith( "http:" ) && !fullpath.startsWith( "https:" ) )
 			return false;
-		final String ext = Tools.getExtension( path );
+		final String ext = Tools.getExtension( fullpath );
 		return ext == null || in( ext, new String[] { "html", "htm", "asp", "aspx", "php", "cgi" } );
 	}
 
@@ -102,43 +140,6 @@ class HTMLRefactor {
 		}
 		catch( Exception exc ) {
 			Log.e( getClass(), "cant modifyRef : " + exc );
-		}
-	}
-
-	private void attribute( final String attrname ) {
-		for( Element e : od.getSegment().getAllElements( attrname, Pattern.compile( ".*" ) ) ) {
-
-			final String path = e.getAttributeValue( attrname );
-			if( path == null )
-				continue;
-
-			final String fullpath = Tools.makeFullPath( url, path );
-			if( fullpath == null )
-				continue;
-
-			String ext;
-			if( (ext = Tools.getExtension( e )) == null && (ext = Tools.getExtension( path )) == null )
-				continue;
-
-			final boolean exist = !master.f.makeID( fullpath, ext );
-
-			if( !exist )
-				master.t.exec( new FileSaveRunner( master, fullpath ) );
-
-			this.modify( e, attrname, master.f.getFileName( fullpath ) );
-		}
-	}
-
-	private void style() {
-		for( Element e : od.getSegment().getAllElements( "style", Pattern.compile( ".*" ) ) ) {
-
-			final String source = e.getAttributeValue( "style" );
-			if( source == null )
-				continue;
-
-			final String result = CSSRefactor.lineRefactoring( source, url, master );
-
-			this.modify( e, "style", result );
 		}
 	}
 }

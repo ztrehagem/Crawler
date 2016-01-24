@@ -21,14 +21,13 @@ class HTMLMaster {
 	}
 
 	boolean makeID( final String url ) {
-		return this.makeID( url, false );
+		return this.makeID( url, UUID.randomUUID().toString() );
 	}
 
-	synchronized boolean makeID( String url, boolean start ) {
+	synchronized boolean makeID( String url, String id ) {
 		if( map.containsKey( url ) ) {
 			return false;
 		}
-		final String id = start ? "start" : UUID.randomUUID().toString();
 		final String filename = "page-" + id + ".html";
 		map.put( url, filename );
 		return true;

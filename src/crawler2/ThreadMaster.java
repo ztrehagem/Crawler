@@ -42,23 +42,16 @@ class ThreadMaster {
 				f.get();
 			}
 			catch( InterruptedException e ) {
-				Log.e( getClass(), "Thread is Interrupted : " + e );
+				Log.e( getClass(), "Interrupted : " + e );
 			}
 			catch( ExecutionException e ) {
-				Log.e( getClass(), "Exception from Thread : " + e );
+				Log.e( getClass(), "Exception : " + e );
 				e.printStackTrace();
 			}
 		}
 	}
 
-	boolean shutdown() {
-		try {
-			Thread.sleep( 100 );
-		}
-		catch( InterruptedException e ) {
-			e.printStackTrace();
-		}
+	void shutdown() {
 		this.exe.shutdown();
-		return this.exe.isTerminated();
 	}
 }

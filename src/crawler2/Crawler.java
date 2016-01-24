@@ -47,12 +47,10 @@ public class Crawler {
 	public void process() throws InterruptedException {
 		Log.v( getClass(), "start" );
 
-		h.makeID( url, true );
+		h.makeID( url, "root" );
 		t.exec( new HTMLSaveRunner( this, url, level ) );
 		t.awaitEmpty();
-		if( !t.shutdown() ) {
-			Log.e( getClass(), "thread pool is not terminated" );
-		}
+		t.shutdown();
 
 		Log.v( getClass(), "done!" );
 	}
