@@ -17,11 +17,9 @@ class CSSRefactor {
 		this.master = master;
 		this.url = url;
 		this.file = file;
-
-		this.process();
 	}
 
-	private void process() {
+	void process() {
 		final StringBuilder buf = new StringBuilder();
 
 		try {

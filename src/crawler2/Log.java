@@ -3,7 +3,11 @@ package crawler2;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class Log {
+class Log {
+
+	private Log() {
+
+	}
 
 	public static void v( final Class<?> cls, final String msg ) {
 		if( Crawler.PrintLog )
