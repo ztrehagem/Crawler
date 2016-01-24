@@ -63,11 +63,11 @@ class HTMLRefactor {
 				this.modify( e, attrname, master.h.getFileName( fullpath ) );
 			}
 			else {
-				final TriBool t = master.f.makeID( fullpath, e );
-				if( t == TriBool.ERROR )
+				String ext;
+				if( (ext = Tools.getExtension( e )) == null && (ext = Tools.getExtension( path )) == null )
 					continue;
 
-				final boolean exist = t == TriBool.TRUE ? false : true;
+				final boolean exist = !master.f.makeID( fullpath, ext );
 				if( !exist )
 					master.t.exec( new FileSaveRunner( master, fullpath ) );
 
@@ -116,11 +116,12 @@ class HTMLRefactor {
 			if( fullpath == null )
 				continue;
 
-			final TriBool t = master.f.makeID( fullpath, e );
-			if( t == TriBool.ERROR )
+			String ext;
+			if( (ext = Tools.getExtension( e )) == null && (ext = Tools.getExtension( path )) == null )
 				continue;
 
-			final boolean exist = t == TriBool.TRUE ? false : true;
+			final boolean exist = !master.f.makeID( fullpath, ext );
+
 			if( !exist )
 				master.t.exec( new FileSaveRunner( master, fullpath ) );
 

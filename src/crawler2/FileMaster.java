@@ -3,7 +3,6 @@ package crawler2;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import net.htmlparser.jericho.Element;
 
 class FileMaster {
 
@@ -15,17 +14,6 @@ class FileMaster {
 
 	String getFileName( final String url ) {
 		return map.get( url );
-	}
-
-	TriBool makeID( final String url, final Element e ) {
-		String ext = Tools.getExtension( e );
-		if( ext == null ) {
-			ext = Tools.getExtension( url );
-			if( ext == null )
-				return TriBool.ERROR;
-		}
-
-		return this.makeID( url, ext ) ? TriBool.TRUE : TriBool.FALSE;
 	}
 
 	synchronized boolean makeID( final String url, final String extension ) {
