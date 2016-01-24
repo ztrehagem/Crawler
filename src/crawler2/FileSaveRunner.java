@@ -68,5 +68,7 @@ class FileSaveRunner implements Runnable {
 		if( isCss ) {
 			new CSSRefactor( this.master, this.url, this.file ).process();
 		}
+
+		Log.v( getClass(), "saved '" + this.url + "' -> '" + this.file + "'" );
 	}
 }

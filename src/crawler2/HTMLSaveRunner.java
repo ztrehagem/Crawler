@@ -36,6 +36,8 @@ class HTMLSaveRunner implements Runnable {
 		}
 
 		save( new HTMLRefactor( master, url, src, h ).getResult() );
+
+		Log.v( getClass(), "saved '" + this.url + "' -> '" + this.file + "'" );
 	}
 
 	private void save( final OutputDocument od ) {
