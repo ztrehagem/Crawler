@@ -49,17 +49,10 @@ class HTMLRefactor {
 			if( isHTMLLinkTag( tag ) ) {
 				if( !isHTML( fullpath ) )
 					continue;
-				synchronized( master.h ) {
-					if( !master.h.has( fullpath ) ) {
-						if( h > 0 ) {
-							master.h.makeID( fullpath );
-							master.t.exec( new HTMLSaveRunner( master, fullpath, h ) );
-						}
-						else {
-							continue;
-						}
-					}
-				}
+
+				if( master.h.makeID( fullpath, h > 0 ) )
+					master.t.exec( new HTMLSaveRunner( master, fullpath, h ) );
+
 				this.modify( e, attrname, master.h.getFileName( fullpath ) );
 			}
 			else {
@@ -67,8 +60,7 @@ class HTMLRefactor {
 				if( (ext = Tools.getExtension( e )) == null && (ext = Tools.getExtension( path )) == null )
 					continue;
 
-				final boolean exist = !master.f.makeID( fullpath, ext );
-				if( !exist )
+				if( master.f.makeID( fullpath, ext ) )
 					master.t.exec( new FileSaveRunner( master, fullpath ) );
 
 				this.modify( e, attrname, master.f.getFileName( fullpath ) );
@@ -91,9 +83,7 @@ class HTMLRefactor {
 			if( (ext = Tools.getExtension( path )) == null )
 				continue;
 
-			final boolean exist = !master.f.makeID( fullpath, ext );
-
-			if( !exist )
+			if( master.f.makeID( fullpath, ext ) )
 				master.t.exec( new FileSaveRunner( master, fullpath ) );
 
 			this.modify( e, attrname, master.f.getFileName( fullpath ) );

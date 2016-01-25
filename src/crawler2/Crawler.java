@@ -47,7 +47,7 @@ public class Crawler {
 	public void process() throws InterruptedException {
 		Log.v( getClass(), "start" );
 
-		h.makeID( url, "root" );
+		h.makeStartID( url );
 		t.exec( new HTMLSaveRunner( this, url, level ) );
 		t.awaitEmpty();
 		t.shutdown();
