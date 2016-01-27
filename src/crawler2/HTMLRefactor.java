@@ -26,6 +26,7 @@ class HTMLRefactor {
 		tag( "img", "src" );
 		tag( "link", "href" );
 		tag( "script", "src" );
+		tag( "video", "src" );
 		tag( "a", "href" );
 		tag( "iframe", "src" );
 		attribute( "background" );
