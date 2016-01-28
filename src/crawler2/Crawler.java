@@ -39,12 +39,14 @@ public class Crawler {
 		this.f = new FileMaster();
 		this.h = new HTMLMaster();
 		this.t = new ThreadMaster();
-
-		Log.v( getClass(), "target '" + url + "'" );
-		Log.v( getClass(), "root '" + this.root + "'" );
 	}
 
 	public void process() throws InterruptedException {
+		Log.open( root );
+
+		Log.v( getClass(), "target '" + url + "'" );
+		Log.v( getClass(), "root '" + this.root + "'" );
+
 		Log.v( getClass(), "start" );
 
 		h.makeStartID( url );
@@ -53,6 +55,8 @@ public class Crawler {
 		t.shutdown();
 
 		Log.v( getClass(), "done!" );
+
+		Log.close();
 	}
 
 	private static void initialize_Jericho() {
