@@ -143,7 +143,7 @@ class HTMLRefactor {
 		}
 		if( tag.equals( HTMLElementName.SCRIPT ) ) {
 			final String type = e.getAttributeValue( "type" );
-			return type != null && !type.toLowerCase().equals( "javascript" );
+			return type != null && !type.toLowerCase().equals( "text/javascript" );
 		}
 		return false;
 	}
