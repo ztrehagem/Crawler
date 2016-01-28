@@ -2,8 +2,6 @@ package crawler2;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import net.htmlparser.jericho.Element;
-import net.htmlparser.jericho.HTMLElementName;
 
 class Tools {
 
@@ -48,31 +46,5 @@ class Tools {
 			return null;
 		}
 		return path.equals( "" ) ? null : path;
-	}
-
-	static String getExtension( Element e ) {
-		final String en = e.getName().toLowerCase();
-		if( en.equals( HTMLElementName.LINK ) ) {
-			final String rel = e.getAttributeValue( "rel" );
-			if( rel != null && !rel.toLowerCase().equals( "stylesheet" ) )
-				return null;
-			else
-				return "css";
-		}
-		if( en.equals( HTMLElementName.SCRIPT ) ) {
-			final String type = e.getAttributeValue( "type" );
-			if( type == null || type.toLowerCase().equals( "text/javascript" ) )
-				return "js";
-			else
-				return null;
-		}
-		return null;
-	}
-
-	static String getExtension( Element e, String path ) {
-		String result = getExtension( e );
-		if( result == null )
-			result = getExtension( path );
-		return result;
 	}
 }

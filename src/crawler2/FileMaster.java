@@ -17,11 +17,9 @@ class FileMaster {
 	}
 
 	synchronized boolean makeID( final String url, final String extension ) {
-		if( map.containsKey( url ) ) {
+		if( map.containsKey( url ) )
 			return false;
-		}
-		final String suffix = (extension != null) ? "." + extension : "";
-		map.put( url, "file-" + UUID.randomUUID() + suffix );
+		map.put( url, "file-" + UUID.randomUUID() + "." + extension );
 		return true;
 	}
 }

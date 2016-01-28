@@ -3,6 +3,7 @@ package crawler2;
 import java.util.Map;
 import java.util.regex.Pattern;
 import net.htmlparser.jericho.Element;
+import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.OutputDocument;
 import net.htmlparser.jericho.Source;
 
@@ -57,7 +58,11 @@ class HTMLRefactor {
 				this.modify( e, attrname, master.h.getFileName( fullpath ) );
 			}
 			else {
-				final String ext = Tools.getExtension( e, path );
+
+				if( isUnknown( e ) )
+					continue;
+
+				final String ext = Tools.getExtension( path );
 
 				if( master.f.makeID( fullpath, ext ) )
 					master.t.exec( new FileSaveRunner( master, fullpath ) );
@@ -128,5 +133,18 @@ class HTMLRefactor {
 		catch( Exception exc ) {
 			Log.e( getClass(), "cant modifyRef : " + exc );
 		}
+	}
+
+	private boolean isUnknown( Element e ) {
+		final String tag = e.getName().toLowerCase();
+		if( tag.equals( HTMLElementName.LINK ) ) {
+			final String rel = e.getAttributeValue( "rel" );
+			return rel == null || !rel.toLowerCase().equals( "stylesheet" );
+		}
+		if( tag.equals( HTMLElementName.SCRIPT ) ) {
+			final String type = e.getAttributeValue( "type" );
+			return type != null && !type.toLowerCase().equals( "javascript" );
+		}
+		return false;
 	}
 }
