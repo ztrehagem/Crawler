@@ -33,8 +33,8 @@ class HTMLRefactor {
 		style();
 	}
 
-	OutputDocument getResult() {
-		return this.od;
+	String getResult() {
+		return this.od.toString();
 	}
 
 	private void tag( final String tag, final String attrname ) {

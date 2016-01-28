@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import net.htmlparser.jericho.OutputDocument;
 import net.htmlparser.jericho.Source;
 
 class HTMLSaveRunner implements Runnable {
@@ -40,7 +39,7 @@ class HTMLSaveRunner implements Runnable {
 		Log.v( getClass(), "saved '" + this.url + "' -> '" + this.file + "'" );
 	}
 
-	private void save( final OutputDocument od ) {
+	private void save( final String s ) {
 		try {
 			file.createNewFile();
 		}
@@ -50,7 +49,7 @@ class HTMLSaveRunner implements Runnable {
 
 		try {
 			FileWriter w = new FileWriter( file );
-			w.write( od.toString() );
+			w.write( s );
 			w.flush();
 			w.close();
 		}

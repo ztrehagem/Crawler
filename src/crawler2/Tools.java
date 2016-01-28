@@ -23,33 +23,31 @@ class Tools {
 	}
 
 	static String getExtension( String path ) {
-		String[] sp;
-		String ext = path;
 
 		try {
-			ext = new URI( ext ).getPath();
+			path = new URI( path ).getPath();
 		}
 		catch( URISyntaxException e ) {
 			return null;
 		}
 
 		try {
-			//			Log.v( Tools.class, "getExtension (original) '" + path + "'" );
-			if( ext.endsWith( "/" ) )
+			if( path.endsWith( "/" ) )
 				return null;
-			sp = ext.split( "\\/" );
-			ext = sp[sp.length - 1];
-			//			Log.v( Tools.class, "getExtension (/) '" + ext + "'" );
-			if( !ext.contains( "." ) )
+
+			String[] sp = path.split( "\\/" );
+			path = sp[sp.length - 1];
+
+			if( !path.contains( "." ) )
 				return null;
-			sp = ext.split( "\\." );
-			ext = sp[sp.length - 1];
-			//			Log.v( Tools.class, "getExtension (.) '" + ext + "'" );
+
+			sp = path.split( "\\." );
+			path = sp[sp.length - 1];
 		}
 		catch( ArrayIndexOutOfBoundsException | NullPointerException e ) {
 			return null;
 		}
-		return ext.equals( "" ) ? null : ext;
+		return path.equals( "" ) ? null : path;
 	}
 
 	static String getExtension( Element e ) {
@@ -69,10 +67,5 @@ class Tools {
 				return null;
 		}
 		return null;
-	}
-
-	static boolean isPage( String href ) {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
 	}
 }
