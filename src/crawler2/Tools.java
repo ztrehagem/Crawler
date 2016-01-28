@@ -1,6 +1,7 @@
 package crawler2;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 
@@ -26,25 +27,26 @@ class Tools {
 		String ext = path;
 
 		try {
+			ext = new URI( ext ).getPath();
+		}
+		catch( URISyntaxException e ) {
+			return null;
+		}
+
+		try {
 			//			Log.v( Tools.class, "getExtension (original) '" + path + "'" );
 			if( ext.endsWith( "/" ) )
 				return null;
 			sp = ext.split( "\\/" );
 			ext = sp[sp.length - 1];
 			//			Log.v( Tools.class, "getExtension (/) '" + ext + "'" );
-			sp = ext.split( "\\#" );
-			ext = sp[0];
-			//			Log.v( Tools.class, "getExtension (#) '" + ext + "'" );
-			sp = ext.split( "\\?" );
-			ext = sp[0];
-			//			Log.v( Tools.class, "getExtension (?) '" + ext + "'" );
 			if( !ext.contains( "." ) )
 				return null;
 			sp = ext.split( "\\." );
 			ext = sp[sp.length - 1];
 			//			Log.v( Tools.class, "getExtension (.) '" + ext + "'" );
 		}
-		catch( ArrayIndexOutOfBoundsException e ) {
+		catch( ArrayIndexOutOfBoundsException | NullPointerException e ) {
 			return null;
 		}
 		return ext.equals( "" ) ? null : ext;
