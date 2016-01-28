@@ -57,9 +57,7 @@ class HTMLRefactor {
 				this.modify( e, attrname, master.h.getFileName( fullpath ) );
 			}
 			else {
-				String ext;
-				if( (ext = Tools.getExtension( e )) == null && (ext = Tools.getExtension( path )) == null )
-					continue;
+				final String ext = Tools.getExtension( e, path );
 
 				if( master.f.makeID( fullpath, ext ) )
 					master.t.exec( new FileSaveRunner( master, fullpath ) );
@@ -80,9 +78,7 @@ class HTMLRefactor {
 			if( fullpath == null )
 				continue;
 
-			String ext;
-			if( (ext = Tools.getExtension( path )) == null )
-				continue;
+			final String ext = Tools.getExtension( path );
 
 			if( master.f.makeID( fullpath, ext ) )
 				master.t.exec( new FileSaveRunner( master, fullpath ) );

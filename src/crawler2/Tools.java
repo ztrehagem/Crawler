@@ -38,7 +38,7 @@ class Tools {
 			String[] sp = path.split( "\\/" );
 			path = sp[sp.length - 1];
 
-			if( !path.contains( "." ) )
+			if( !path.contains( "." ) || path.endsWith( "." ) )
 				return null;
 
 			sp = path.split( "\\." );
@@ -67,5 +67,12 @@ class Tools {
 				return null;
 		}
 		return null;
+	}
+
+	static String getExtension( Element e, String path ) {
+		String result = getExtension( e );
+		if( result == null )
+			result = getExtension( path );
+		return result;
 	}
 }

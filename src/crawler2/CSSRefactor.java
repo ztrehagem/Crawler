@@ -59,24 +59,23 @@ class CSSRefactor {
 			final int start = head + 4 + (quote ? 1 : 0);
 			final int end = line.indexOf( ")", start ) - (quote ? 1 : 0);
 
+			if( end <= -1 ) {
+				last = head;
+				break;
+			}
+
 			last = end + 1 + (quote ? 1 : 0);
 
 			final String target = line.substring( start, end );
 
 			final String ext = Tools.getExtension( target );
-			if( ext == null ) {
-				lbuf.append( line.substring( head, last ) );
-				continue;
-			}
 
 			final String fullpath = Tools.makeFullPath( url, target );
-			if( master.f.makeID( fullpath, ext ) ) {
-				master.t.exec( new FileSaveRunner( master, fullpath ) );
-			}
 
-			final String result = "url(\"" + master.f.getFileName( fullpath ) + "\")";
-			//					Log.v( getClass(), "css modify '" + target + "' -> '" + result + "'" );
-			lbuf.append( result );
+			if( master.f.makeID( fullpath, ext ) )
+				master.t.exec( new FileSaveRunner( master, fullpath ) );
+
+			lbuf.append( "url(\"" + master.f.getFileName( fullpath ) + "\")" );
 		}
 		lbuf.append( line.substring( last ) );
 
