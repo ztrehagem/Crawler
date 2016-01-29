@@ -40,7 +40,7 @@ public class Crawler {
 		this.t = new ThreadMaster();
 	}
 
-	public void process() throws InterruptedException {
+	public void exec() throws InterruptedException {
 		Log.open( root );
 
 		Log.v( getClass(), "target '" + url + "'" );
@@ -49,8 +49,8 @@ public class Crawler {
 		Log.v( getClass(), "start" );
 
 		h.makeStartID( url );
-		t.exec( new HTMLSaveRunner( this, url, level ) );
-		t.awaitEmpty();
+		t.offer( new HTMLSaveRunner( this, url, level ) );
+		t.await();
 		t.shutdown();
 
 		Log.v( getClass(), "done!" );

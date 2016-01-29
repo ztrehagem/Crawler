@@ -18,15 +18,15 @@ class ThreadMaster {
 		q = new ArrayBlockingQueue<>( Short.MAX_VALUE );
 	}
 
-	void exec( Callable<?> c ) {
-		offer( exe.submit( c ) );
+	void offer( Callable<?> c ) {
+		addQ( exe.submit( c ) );
 	}
 
-	void exec( Runnable r ) {
-		offer( exe.submit( r ) );
+	void offer( Runnable r ) {
+		addQ( exe.submit( r ) );
 	}
 
-	private void offer( Future<?> f ) {
+	private void addQ( Future<?> f ) {
 		try {
 			q.put( f );
 		}
@@ -35,7 +35,7 @@ class ThreadMaster {
 		}
 	}
 
-	void awaitEmpty() {
+	void await() {
 		Future<?> f;
 		while( (f = q.poll()) != null ) {
 			try {

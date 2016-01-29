@@ -56,9 +56,9 @@ class HTMLModifier {
 
 			if( master.f.makeID( fullpath, ext ) ) {
 				if( ext != null && ext.toLowerCase().equals( "css" ) )
-					master.t.exec( new CSSSaveRunner( master, fullpath ) );
+					master.t.offer( new CSSSaveRunner( master, fullpath ) );
 				else
-					master.t.exec( new FileSaveRunner( master, fullpath ) );
+					master.t.offer( new FileSaveRunner( master, fullpath ) );
 			}
 
 			this.modify( e, attrname, master.f.getFileName( fullpath ) );
@@ -79,7 +79,7 @@ class HTMLModifier {
 				continue;
 
 			if( master.h.makeID( fullpath, h > 0 ) )
-				master.t.exec( new HTMLSaveRunner( master, fullpath, h ) );
+				master.t.offer( new HTMLSaveRunner( master, fullpath, h ) );
 
 			this.modify( e, attrname, master.h.getFileName( fullpath ) );
 		}
@@ -99,7 +99,7 @@ class HTMLModifier {
 			final String ext = Tools.getExtension( path );
 
 			if( master.f.makeID( fullpath, ext ) )
-				master.t.exec( new FileSaveRunner( master, fullpath ) );
+				master.t.offer( new FileSaveRunner( master, fullpath ) );
 
 			this.modify( e, attrname, master.f.getFileName( fullpath ) );
 		}

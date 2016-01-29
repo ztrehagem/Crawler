@@ -81,7 +81,7 @@ class Tools {
 			final String fullpath = Tools.makeFullPath( url, target );
 
 			if( master.f.makeID( fullpath, ext ) )
-				master.t.exec( new FileSaveRunner( master, fullpath ) );
+				master.t.offer( new FileSaveRunner( master, fullpath ) );
 
 			sb.append( "url(\"" + master.f.getFileName( fullpath ) + "\")" );
 		}
