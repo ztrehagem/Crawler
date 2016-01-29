@@ -55,7 +55,7 @@ class Tools {
 		return path.equals( "" ) ? null : path;
 	}
 
-	static String CSSRefactoring( final Crawler master, final String url, final String line ) {
+	static String cssModify( final Crawler master, final String url, final String line ) {
 		final StringBuilder sb = new StringBuilder();
 		int last = 0;
 		int head = 0;

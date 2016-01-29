@@ -6,14 +6,14 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.OutputDocument;
 import net.htmlparser.jericho.Source;
 
-class HTMLRefactor {
+class HTMLModifier {
 
 	private final Crawler			master;
 	private final String			url;
 	private final int				h;
 	private final OutputDocument	od;
 
-	HTMLRefactor( final Crawler master, final String url, final String src, final int h ) {
+	HTMLModifier( final Crawler master, final String url, final String src, final int h ) {
 		this.master = master;
 		this.url = url;
 		this.h = h;
@@ -109,13 +109,11 @@ class HTMLRefactor {
 		final String attrname = "style";
 		for( Element e : od.getSegment().getAllElements( attrname, Pattern.compile( ".*" ) ) ) {
 
-			final String source = e.getAttributeValue( attrname );
-			if( source == null )
+			final String value = e.getAttributeValue( attrname );
+			if( value == null )
 				continue;
 
-			final String result = Tools.CSSRefactoring( master, url, source );
-
-			this.modify( e, attrname, result );
+			this.modify( e, attrname, Tools.cssModify( master, url, value ) );
 		}
 	}
 

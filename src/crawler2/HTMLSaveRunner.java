@@ -25,7 +25,7 @@ class HTMLSaveRunner implements Runnable {
 		try {
 			final String src = Tools.downloadToString( url );
 
-			final HTMLRefactor r = new HTMLRefactor( master, url, src, h );
+			final HTMLModifier r = new HTMLModifier( master, url, src, h );
 
 			Tools.saveStringToFile( file, r.getResult() );
 		}
