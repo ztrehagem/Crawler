@@ -27,7 +27,7 @@ class HTMLSaveRunner implements Runnable {
 
 			final HTMLRefactor r = new HTMLRefactor( master, url, src, h );
 
-			Tools.saveToFile( file, r.getResult() );
+			Tools.saveStringToFile( file, r.getResult() );
 		}
 		catch( IOException e ) {
 			Log.e( getClass(), "failed : " + e );

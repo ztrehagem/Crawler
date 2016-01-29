@@ -23,21 +23,23 @@ class HTMLRefactor {
 	}
 
 	private void refactoring() {
-		tag( "img", "src" );
-		tag( "link", "href" );
-		tag( "script", "src" );
-		tag( "video", "src" );
-		tag( "a", "href" );
-		tag( "iframe", "src" );
+		filelinktag( "img", "src" );
+		filelinktag( "link", "href" );
+		filelinktag( "script", "src" );
+		filelinktag( "video", "src" );
+		// TODO 追加　他のメディアタグ
+		pagelinktag( "a", "href" );
+		pagelinktag( "iframe", "src" );
 		attribute( "background" );
-		style();
+		styles();
+		// TODO 埋め込み追加 styleタグ
 	}
 
 	String getResult() {
 		return this.od.toString();
 	}
 
-	private void tag( final String tag, final String attrname ) {
+	private void filelinktag( final String tag, final String attrname ) {
 		for( Element e : od.getSegment().getAllElements( tag ) ) {
 			final String path = e.getAttributeValue( attrname );
 			if( path == null )
@@ -47,27 +49,39 @@ class HTMLRefactor {
 			if( fullpath == null )
 				continue;
 
-			if( isHTMLLinkTag( tag ) ) {
-				if( !isHTML( fullpath ) )
-					continue;
+			if( isUnknown( e ) )
+				continue;
 
-				if( master.h.makeID( fullpath, h > 0 ) )
-					master.t.exec( new HTMLSaveRunner( master, fullpath, h ) );
+			final String ext = Tools.getExtension( path );
 
-				this.modify( e, attrname, master.h.getFileName( fullpath ) );
-			}
-			else {
-
-				if( isUnknown( e ) )
-					continue;
-
-				final String ext = Tools.getExtension( path );
-
-				if( master.f.makeID( fullpath, ext ) )
+			if( master.f.makeID( fullpath, ext ) ) {
+				if( ext != null && ext.toLowerCase().equals( "css" ) )
+					master.t.exec( new CSSSaveRunner( master, fullpath ) );
+				else
 					master.t.exec( new FileSaveRunner( master, fullpath ) );
-
-				this.modify( e, attrname, master.f.getFileName( fullpath ) );
 			}
+
+			this.modify( e, attrname, master.f.getFileName( fullpath ) );
+		}
+	}
+
+	private void pagelinktag( final String tag, final String attrname ) {
+		for( Element e : od.getSegment().getAllElements( tag ) ) {
+			final String path = e.getAttributeValue( attrname );
+			if( path == null )
+				continue;
+
+			final String fullpath = Tools.makeFullPath( url, path );
+			if( fullpath == null )
+				continue;
+
+			if( !isHTML( fullpath ) )
+				continue;
+
+			if( master.h.makeID( fullpath, h > 0 ) )
+				master.t.exec( new HTMLSaveRunner( master, fullpath, h ) );
+
+			this.modify( e, attrname, master.h.getFileName( fullpath ) );
 		}
 	}
 
@@ -91,7 +105,7 @@ class HTMLRefactor {
 		}
 	}
 
-	private void style() {
+	private void styles() {
 		final String attrname = "style";
 		for( Element e : od.getSegment().getAllElements( attrname, Pattern.compile( ".*" ) ) ) {
 
@@ -99,38 +113,17 @@ class HTMLRefactor {
 			if( source == null )
 				continue;
 
-			final String result = CSSRefactor.lineRefactoring( source, url, master );
+			final String result = Tools.CSSRefactoring( master, url, source );
 
 			this.modify( e, attrname, result );
 		}
-	}
-
-	private boolean isHTMLLinkTag( final String tag ) {
-		return in( tag, new String[] { "a", "iframe" } );
 	}
 
 	private boolean isHTML( final String fullpath ) {
 		if( !fullpath.startsWith( "http:" ) && !fullpath.startsWith( "https:" ) )
 			return false;
 		final String ext = Tools.getExtension( fullpath );
-		return ext == null || in( ext, new String[] { "html", "htm", "asp", "aspx", "php", "cgi" } );
-	}
-
-	private boolean in( final String s, final String[] a ) {
-		for( String as : a ) {
-			if( s.equals( as ) )
-				return true;
-		}
-		return false;
-	}
-
-	private void modify( final Element e, final String attrname, final String value ) {
-		try {
-			od.replace( e.getAttributes(), true ).put( attrname.toLowerCase(), value );
-		}
-		catch( Exception exc ) {
-			Log.e( getClass(), "cant modifyRef : " + exc );
-		}
+		return ext == null || Tools.in( ext, new String[] { "html", "htm", "asp", "aspx", "php", "cgi" } );
 	}
 
 	private boolean isUnknown( Element e ) {
@@ -144,5 +137,14 @@ class HTMLRefactor {
 			return type != null && !type.toLowerCase().equals( "text/javascript" );
 		}
 		return false;
+	}
+
+	private void modify( final Element e, final String attrname, final String value ) {
+		try {
+			od.replace( e.getAttributes(), true ).put( attrname.toLowerCase(), value );
+		}
+		catch( Exception exc ) {
+			Log.e( getClass(), "cant modifyRef : " + exc );
+		}
 	}
 }
