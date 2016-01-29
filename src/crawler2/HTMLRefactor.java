@@ -1,6 +1,5 @@
 package crawler2;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -127,8 +126,7 @@ class HTMLRefactor {
 
 	private void modify( final Element e, final String attrname, final String value ) {
 		try {
-			Map<String, String> map = od.replace( e.getAttributes(), true );
-			map.put( attrname.toLowerCase(), value );
+			od.replace( e.getAttributes(), true ).put( attrname.toLowerCase(), value );
 		}
 		catch( Exception exc ) {
 			Log.e( getClass(), "cant modifyRef : " + exc );
