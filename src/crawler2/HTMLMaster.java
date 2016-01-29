@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-class HTMLMaster {
+class HTMLMaster implements Master {
 
 	private final Map<String, HTMLMasterMapV> map;
 
@@ -12,14 +12,9 @@ class HTMLMaster {
 		this.map = new HashMap<>();
 	}
 
-	String getFileName( final String url ) {
+	@Override
+	public String getFileName( final String url ) {
 		return map.get( url ).filename;
-	}
-
-	boolean has( final String url ) {
-		if( !this.map.containsKey( url ) )
-			return false;
-		return this.map.get( url ).saved;
 	}
 
 	void makeStartID( final String url ) {
@@ -29,7 +24,8 @@ class HTMLMaster {
 	}
 
 	// return : allow do save to thread
-	synchronized boolean makeID( String url, boolean cansave ) {
+	synchronized boolean makeID( String url, int h ) {
+		final boolean cansave = h > 0;
 		if( !map.containsKey( url ) ) {
 			register( url, cansave );
 			return cansave;

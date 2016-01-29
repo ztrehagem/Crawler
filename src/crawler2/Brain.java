@@ -8,7 +8,7 @@ class Brain {
 
 	final HTMLMaster	h;
 	final FileMaster	f;
-	final ThreadMaster	t;
+	final ThreadManager	t;
 	final File			root;
 	final Log			log;
 	final int			connectionNum;
@@ -24,6 +24,6 @@ class Brain {
 
 		this.h = new HTMLMaster();
 		this.f = new FileMaster();
-		this.t = new ThreadMaster( this );
+		this.t = new ThreadManager( this );
 	}
 }

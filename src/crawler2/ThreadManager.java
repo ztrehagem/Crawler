@@ -8,13 +8,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-class ThreadMaster {
+class ThreadManager {
 
 	private final Brain						brain;
 	private final ExecutorService			exe;
 	private final BlockingQueue<Future<?>>	q;
 
-	ThreadMaster( Brain brain ) {
+	ThreadManager( Brain brain ) {
 		this.brain = brain;
 		exe = Executors.newFixedThreadPool( brain.connectionNum );
 		q = new ArrayBlockingQueue<>( Short.MAX_VALUE );

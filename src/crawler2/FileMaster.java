@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-class FileMaster {
+class FileMaster implements Master {
 
 	private final Map<String, String> map;
 
@@ -12,7 +12,8 @@ class FileMaster {
 		this.map = new HashMap<>();
 	}
 
-	String getFileName( final String url ) {
+	@Override
+	public String getFileName( final String url ) {
 		return map.get( url );
 	}
 
