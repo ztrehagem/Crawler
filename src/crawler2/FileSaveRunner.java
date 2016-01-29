@@ -5,12 +5,14 @@ import java.io.IOException;
 
 class FileSaveRunner implements Runnable {
 
+	private final Brain		brain;
 	private final String	url;
 	private final File		file;
 
-	FileSaveRunner( final Crawler master, final String url ) {
+	FileSaveRunner( final Brain brain, final String url ) {
+		this.brain = brain;
 		this.url = url;
-		this.file = new File( master.root, master.f.getFileName( url ) );
+		this.file = new File( brain.root, brain.f.getFileName( url ) );
 	}
 
 	@Override
@@ -20,10 +22,10 @@ class FileSaveRunner implements Runnable {
 			Tools.downloadToFile( url, file );
 		}
 		catch( IOException e ) {
-			Log.e( getClass(), "failed : " + e );
+			brain.log.e( getClass(), "failed : " + e );
 			return;
 		}
 
-		Log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
+		brain.log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
 	}
 }

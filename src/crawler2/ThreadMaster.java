@@ -10,11 +10,13 @@ import java.util.concurrent.Future;
 
 class ThreadMaster {
 
+	private final Brain						brain;
 	private final ExecutorService			exe;
 	private final BlockingQueue<Future<?>>	q;
 
-	ThreadMaster() {
-		exe = Executors.newFixedThreadPool( Crawler.ConnectionNumLimit );
+	ThreadMaster( Brain brain ) {
+		this.brain = brain;
+		exe = Executors.newFixedThreadPool( brain.connectionNum );
 		q = new ArrayBlockingQueue<>( Short.MAX_VALUE );
 	}
 
@@ -31,7 +33,7 @@ class ThreadMaster {
 			q.put( f );
 		}
 		catch( InterruptedException e ) {
-			Log.e( getClass(), "InterruptedException in offer : " + e );
+			brain.log.e( getClass(), "InterruptedException in offer : " + e );
 		}
 	}
 
@@ -42,10 +44,10 @@ class ThreadMaster {
 				f.get();
 			}
 			catch( InterruptedException e ) {
-				Log.e( getClass(), "Interrupted : " + e );
+				brain.log.e( getClass(), "Interrupted : " + e );
 			}
 			catch( ExecutionException e ) {
-				Log.e( getClass(), "Exception : " + e );
+				brain.log.e( getClass(), "Exception : " + e );
 				e.printStackTrace();
 			}
 		}

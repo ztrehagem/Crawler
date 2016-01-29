@@ -9,65 +9,54 @@ import java.util.Date;
 
 class Log {
 
-	private Log() {
+	private final Brain	brain;
+	private FileWriter	w;
 
+	Log( Brain brain ) {
+		this.brain = brain;
 	}
 
-	public static void v( final Class<?> cls, final String msg ) {
+	public void v( final Class<?> cls, final String msg ) {
 		print( System.out, cls, msg );
 	}
 
-	public static void e( final Class<?> cls, final String msg ) {
+	public void e( final Class<?> cls, final String msg ) {
 		print( System.err, cls, msg );
 	}
 
-	private static void print( final PrintStream ps, final Class<?> cls, final String msg ) {
+	private void print( final PrintStream ps, final Class<?> cls, final String msg ) {
 		final String s = format( cls, msg );
 		if( w != null ) {
 			try {
 				w.write( s );
+				w.write( '\n' );
 				w.flush();
 			}
 			catch( IOException e ) {
 			}
 		}
-		if( Crawler.PrintLog )
+		if( brain.printLog )
 			ps.println( s );
 	}
 
-	private static String format( final Class<?> cls, final String msg ) {
+	private String format( final Class<?> cls, final String msg ) {
 		return "[" + cls.getSimpleName() + " " + getTime() + "]\n" + msg + "\n";
 	}
 
-	private static String getTime() {
+	private String getTime() {
 		return DateFormat.getDateTimeInstance().format( new Date( System.currentTimeMillis() ) );
 	}
 
-	private static FileWriter w;
-
-	public static void open( File root ) {
+	void open() throws IOException {
 		if( w != null )
 			return;
-
-		final File file = new File( root, "log.txt" );
-		try {
-			file.createNewFile();
-			w = new FileWriter( file );
-		}
-		catch( IOException e ) {
-			Log.v( Log.class, "cant create log file" );
-		}
+		final File file = new File( brain.root, "log.txt" );
+		file.createNewFile();
+		this.w = new FileWriter( file );
 	}
 
-	public static void close() {
-		if( w != null ) {
-			try {
-				w.close();
-			}
-			catch( IOException e ) {
-				e.printStackTrace();
-			}
-			w = null;
-		}
+	void close() throws IOException {
+		this.w.close();
+		this.w = null;
 	}
 }

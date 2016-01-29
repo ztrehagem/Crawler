@@ -8,13 +8,13 @@ import net.htmlparser.jericho.Source;
 
 class HTMLModifier {
 
-	private final Crawler			master;
+	private final Brain				brain;
 	private final String			url;
 	private final int				h;
 	private final OutputDocument	od;
 
-	HTMLModifier( final Crawler master, final String url, final String src, final int h ) {
-		this.master = master;
+	HTMLModifier( final Brain brain, final String url, final String src, final int h ) {
+		this.brain = brain;
 		this.url = url;
 		this.h = h;
 		this.od = new OutputDocument( new Source( src.replace( "\n", "" ) ) );
@@ -54,14 +54,14 @@ class HTMLModifier {
 
 			final String ext = Tools.getExtension( path );
 
-			if( master.f.makeID( fullpath, ext ) ) {
+			if( brain.f.makeID( fullpath, ext ) ) {
 				if( ext != null && ext.toLowerCase().equals( "css" ) )
-					master.t.offer( new CSSSaveRunner( master, fullpath ) );
+					brain.t.offer( new CSSSaveRunner( brain, fullpath ) );
 				else
-					master.t.offer( new FileSaveRunner( master, fullpath ) );
+					brain.t.offer( new FileSaveRunner( brain, fullpath ) );
 			}
 
-			this.modify( e, attrname, master.f.getFileName( fullpath ) );
+			this.modify( e, attrname, brain.f.getFileName( fullpath ) );
 		}
 	}
 
@@ -78,10 +78,10 @@ class HTMLModifier {
 			if( !isHTML( fullpath ) )
 				continue;
 
-			if( master.h.makeID( fullpath, h > 0 ) )
-				master.t.offer( new HTMLSaveRunner( master, fullpath, h ) );
+			if( brain.h.makeID( fullpath, h > 0 ) )
+				brain.t.offer( new HTMLSaveRunner( brain, fullpath, h ) );
 
-			this.modify( e, attrname, master.h.getFileName( fullpath ) );
+			this.modify( e, attrname, brain.h.getFileName( fullpath ) );
 		}
 	}
 
@@ -98,10 +98,10 @@ class HTMLModifier {
 
 			final String ext = Tools.getExtension( path );
 
-			if( master.f.makeID( fullpath, ext ) )
-				master.t.offer( new FileSaveRunner( master, fullpath ) );
+			if( brain.f.makeID( fullpath, ext ) )
+				brain.t.offer( new FileSaveRunner( brain, fullpath ) );
 
-			this.modify( e, attrname, master.f.getFileName( fullpath ) );
+			this.modify( e, attrname, brain.f.getFileName( fullpath ) );
 		}
 	}
 
@@ -113,7 +113,7 @@ class HTMLModifier {
 			if( value == null )
 				continue;
 
-			this.modify( e, attrname, Tools.cssModify( master, url, value ) );
+			this.modify( e, attrname, Tools.cssModify( brain, url, value ) );
 		}
 	}
 
@@ -124,7 +124,7 @@ class HTMLModifier {
 				continue;
 
 			// TODO ここ真面目にタグの中身だけにしたい
-			final String result = Tools.cssModify( master, url, e.toString() );
+			final String result = Tools.cssModify( brain, url, e.toString() );
 
 			od.replace( e, result );
 		}
@@ -155,7 +155,7 @@ class HTMLModifier {
 			od.replace( e.getAttributes(), true ).put( attrname.toLowerCase(), value );
 		}
 		catch( Exception exc ) {
-			Log.e( getClass(), "cant modifyRef : " + exc );
+			brain.log.e( getClass(), "cant modifyRef : " + exc );
 		}
 	}
 }

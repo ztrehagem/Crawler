@@ -9,14 +9,14 @@ import java.net.URL;
 
 class CSSSaveRunner implements Runnable {
 
-	private final Crawler	master;
+	private final Brain		brain;
 	private final String	url;
 	private final File		file;
 
-	CSSSaveRunner( final Crawler master, final String url ) {
-		this.master = master;
+	CSSSaveRunner( final Brain brain, final String url ) {
+		this.brain = brain;
 		this.url = url;
-		this.file = new File( master.root, master.f.getFileName( url ) );
+		this.file = new File( brain.root, brain.f.getFileName( url ) );
 	}
 
 	@Override
@@ -30,17 +30,17 @@ class CSSSaveRunner implements Runnable {
 
 			String line;
 			while( (line = r.readLine()) != null )
-				w.write( Tools.cssModify( master, url, line ) + '\n' );
+				w.write( Tools.cssModify( brain, url, line ) + '\n' );
 
 			r.close();
 			w.close();
 		}
 		catch( IOException e ) {
-			Log.e( getClass(), "failed : " + e );
+			brain.log.e( getClass(), "failed : " + e );
 			return;
 		}
 
-		Log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
+		brain.log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
 	}
 
 }

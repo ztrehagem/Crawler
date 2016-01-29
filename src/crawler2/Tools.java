@@ -55,7 +55,7 @@ class Tools {
 		return path.equals( "" ) ? null : path;
 	}
 
-	static String cssModify( final Crawler master, final String url, final String line ) {
+	static String cssModify( final Brain brain, final String url, final String line ) {
 		final StringBuilder sb = new StringBuilder();
 		int last = 0;
 		int head = 0;
@@ -80,10 +80,10 @@ class Tools {
 
 			final String fullpath = Tools.makeFullPath( url, target );
 
-			if( master.f.makeID( fullpath, ext ) )
-				master.t.offer( new FileSaveRunner( master, fullpath ) );
+			if( brain.f.makeID( fullpath, ext ) )
+				brain.t.offer( new FileSaveRunner( brain, fullpath ) );
 
-			sb.append( "url(\"" + master.f.getFileName( fullpath ) + "\")" );
+			sb.append( "url(\"" + brain.f.getFileName( fullpath ) + "\")" );
 		}
 		sb.append( line.substring( last ) );
 

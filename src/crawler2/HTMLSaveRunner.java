@@ -5,15 +5,15 @@ import java.io.IOException;
 
 class HTMLSaveRunner implements Runnable {
 
-	private final Crawler	master;
+	private final Brain		brain;
 	private final String	url;
 	private final File		file;
 	private final int		h;
 
-	HTMLSaveRunner( final Crawler master, final String url, final int h ) {
-		this.master = master;
+	HTMLSaveRunner( final Brain brain, final String url, final int h ) {
+		this.brain = brain;
 		this.url = url;
-		this.file = new File( master.root, master.h.getFileName( url ) );
+		this.file = new File( brain.root, brain.h.getFileName( url ) );
 		this.h = h - 1;
 		if( this.h < 0 )
 			throw new RuntimeException();
@@ -25,15 +25,15 @@ class HTMLSaveRunner implements Runnable {
 		try {
 			final String src = Tools.downloadToString( url );
 
-			final HTMLModifier r = new HTMLModifier( master, url, src, h );
+			final HTMLModifier r = new HTMLModifier( brain, url, src, h );
 
 			Tools.saveStringToFile( file, r.getResult() );
 		}
 		catch( IOException e ) {
-			Log.e( getClass(), "failed : " + e );
+			brain.log.e( getClass(), "failed : " + e );
 			return;
 		}
 
-		Log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
+		brain.log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
 	}
 }
