@@ -19,10 +19,10 @@ class HTMLModifier {
 		this.h = h;
 		this.od = new OutputDocument( new Source( src.replace( "\n", "" ) ) );
 
-		this.refactoring();
+		this.exec();
 	}
 
-	private void refactoring() {
+	private void exec() {
 		filelinktag( "img", "src" );
 		filelinktag( "link", "href" );
 		filelinktag( "script", "src" );
