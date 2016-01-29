@@ -11,14 +11,14 @@ import net.htmlparser.jericho.PHPTagTypes;
 
 public class Crawler {
 
+	public static int		ConnectionNumLimit	= 16;
+	public static String	ResultDirectoryPath	= "./result";
+	public static boolean	PrintLog			= false;
+
 	final FileMaster		f;
 	final HTMLMaster		h;
 	final ThreadMaster		t;
 	final File				root;
-
-	public static int		ConnectionNumLimit	= 16;
-	public static String	ResultDirectoryPath	= "./result";
-	public static boolean	PrintLog			= false;
 
 	private final String	url;
 	private final int		level;
@@ -32,8 +32,7 @@ public class Crawler {
 		this.url = url;
 		this.level = level;
 
-		this.root = new File( new File( ResultDirectoryPath ), String.valueOf( System.currentTimeMillis() ) + "-"
-			+ new URL( url ).getHost().replace( ':', '-' ).replace( '.', '-' ) );
+		this.root = new File( new File( ResultDirectoryPath ), String.valueOf( System.currentTimeMillis() ) + "-" + new URL( url ).getHost().replace( ':', '-' ).replace( '.', '-' ) );
 		this.root.mkdirs();
 
 		this.f = new FileMaster();
