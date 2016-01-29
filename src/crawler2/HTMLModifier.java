@@ -31,8 +31,8 @@ class HTMLModifier {
 		pagelinktag( "a", "href" );
 		pagelinktag( "iframe", "src" );
 		attribute( "background" );
-		styles();
-		// TODO 埋め込み追加 styleタグ
+		styleAttribute();
+		styleTag();
 	}
 
 	String getResult() {
@@ -105,7 +105,7 @@ class HTMLModifier {
 		}
 	}
 
-	private void styles() {
+	private void styleAttribute() {
 		final String attrname = "style";
 		for( Element e : od.getSegment().getAllElements( attrname, Pattern.compile( ".*" ) ) ) {
 
@@ -114,6 +114,19 @@ class HTMLModifier {
 				continue;
 
 			this.modify( e, attrname, Tools.cssModify( master, url, value ) );
+		}
+	}
+
+	private void styleTag() {
+		for( Element e : od.getSegment().getAllElements( "style" ) ) {
+			final String type = e.getAttributeValue( "type" );
+			if( type != null && !type.equals( "text/css" ) )
+				continue;
+
+			// TODO ここ真面目にタグの中身だけにしたい
+			final String result = Tools.cssModify( master, url, e.toString() );
+
+			od.replace( e, result );
 		}
 	}
 
