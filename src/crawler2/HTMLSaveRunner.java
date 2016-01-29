@@ -1,10 +1,7 @@
 package crawler2;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
-import net.htmlparser.jericho.Source;
 
 class HTMLSaveRunner implements Runnable {
 
@@ -25,37 +22,18 @@ class HTMLSaveRunner implements Runnable {
 	@Override
 	public void run() {
 
-		Source src;
 		try {
-			src = new Source( new URL( url ) );
+			final String src = Tools.downloadToString( url );
+
+			final HTMLRefactor r = new HTMLRefactor( master, url, src, h );
+
+			Tools.saveToFile( file, r.getResult() );
 		}
 		catch( IOException e ) {
-			Log.e( getClass(), "Exception in run : new Source '" + url + "' : " + e );
+			Log.e( getClass(), "failed : " + e );
 			return;
 		}
 
-		save( new HTMLRefactor( master, url, src, h ).getResult() );
-
-		Log.v( getClass(), "saved '" + this.url + "' -> '" + this.file + "'" );
+		Log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
 	}
-
-	private void save( final String s ) {
-		try {
-			file.createNewFile();
-		}
-		catch( IOException e ) {
-			Log.e( getClass(), "Exception in save : createNewFile '" + file + "' : " + e );
-		}
-
-		try {
-			FileWriter w = new FileWriter( file );
-			w.write( s );
-			w.flush();
-			w.close();
-		}
-		catch( IOException e ) {
-			Log.e( getClass(), "Exception in savePage : saving '" + url + "' : " + e );
-		}
-	}
-
 }

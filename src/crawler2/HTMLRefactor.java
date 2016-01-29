@@ -13,11 +13,11 @@ class HTMLRefactor {
 	private final int				h;
 	private final OutputDocument	od;
 
-	HTMLRefactor( final Crawler master, final String url, final Source src, final int h ) {
+	HTMLRefactor( final Crawler master, final String url, final String src, final int h ) {
 		this.master = master;
 		this.url = url;
 		this.h = h;
-		this.od = new OutputDocument( new Source( src.toString().replace( "\n", "" ) ) );
+		this.od = new OutputDocument( new Source( src.replace( "\n", "" ) ) );
 
 		this.refactoring();
 	}

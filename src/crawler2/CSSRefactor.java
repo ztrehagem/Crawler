@@ -3,9 +3,7 @@ package crawler2;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 
 class CSSRefactor {
 
@@ -20,27 +18,18 @@ class CSSRefactor {
 	}
 
 	void process() {
-		final StringBuilder buf = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 
 		try {
 			BufferedReader r = new BufferedReader( new FileReader( this.file ) );
+
 			String line;
+			while( (line = r.readLine()) != null )
+				sb.append( lineRefactoring( line, url, master ) + "\n" );
 
-			while( (line = r.readLine()) != null ) {
-				buf.append( lineRefactoring( line, url, master ) + "\n" );
-			}
 			r.close();
-		}
-		catch( IOException e ) {
-			Log.e( getClass(), "css reading exception : " + e );
-			return;
-		}
 
-		try {
-			Writer w = new FileWriter( this.file );
-			w.write( buf.toString() );
-			w.flush();
-			w.close();
+			Tools.saveToFile( file, sb.toString() );
 		}
 		catch( IOException e ) {
 			Log.e( getClass(), "css writing exception : " + e );
@@ -48,12 +37,12 @@ class CSSRefactor {
 	}
 
 	static String lineRefactoring( final String line, final String url, final Crawler master ) {
-		StringBuilder lbuf = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		int last = 0;
 		int head = 0;
 
 		while( (head = line.indexOf( "url(", last )) != -1 ) {
-			lbuf.append( line.substring( last, head ) );
+			sb.append( line.substring( last, head ) );
 
 			final boolean quote = line.charAt( head + 4 ) == '\'' || line.charAt( head + 4 ) == '"';
 			final int start = head + 4 + (quote ? 1 : 0);
@@ -75,10 +64,10 @@ class CSSRefactor {
 			if( master.f.makeID( fullpath, ext ) )
 				master.t.exec( new FileSaveRunner( master, fullpath ) );
 
-			lbuf.append( "url(\"" + master.f.getFileName( fullpath ) + "\")" );
+			sb.append( "url(\"" + master.f.getFileName( fullpath ) + "\")" );
 		}
-		lbuf.append( line.substring( last ) );
+		sb.append( line.substring( last ) );
 
-		return lbuf.toString();
+		return sb.toString();
 	}
 }
