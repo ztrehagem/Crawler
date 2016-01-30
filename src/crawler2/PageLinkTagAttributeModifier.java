@@ -5,11 +5,11 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.OutputDocument;
 import net.htmlparser.jericho.Segment;
 
-public class PageLinkAttributeModifier extends AttributeModifier {
+public class PageLinkTagAttributeModifier extends AttributeModifier {
 
 	private final int h;
 
-	PageLinkAttributeModifier( Brain brain, OutputDocument od, String url, String tagname, String attrname, int h ) {
+	PageLinkTagAttributeModifier( Brain brain, OutputDocument od, String url, String tagname, String attrname, int h ) {
 		super( brain, od, url, tagname, attrname );
 		this.h = h;
 	}

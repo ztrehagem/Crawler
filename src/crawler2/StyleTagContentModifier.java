@@ -10,7 +10,7 @@ public class StyleTagContentModifier extends AttributeModifier {
 	private final OutputDocument od;
 
 	StyleTagContentModifier( Brain brain, OutputDocument od, String url ) {
-		super( brain, od, url, "style", null );
+		super( brain, od, url, "style", "type" );
 		this.od = od;
 	}
 
@@ -21,7 +21,7 @@ public class StyleTagContentModifier extends AttributeModifier {
 
 	@Override
 	String logic( Element e ) {
-		final String type = e.getAttributeValue( "type" );
+		final String type = e.getAttributeValue( attrname );
 		if( type != null && !type.equals( "text/css" ) )
 			return null;
 

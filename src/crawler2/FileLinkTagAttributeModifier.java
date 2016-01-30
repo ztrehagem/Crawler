@@ -6,9 +6,9 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.OutputDocument;
 import net.htmlparser.jericho.Segment;
 
-class FileLinkAttributeModifier extends AttributeModifier {
+class FileLinkTagAttributeModifier extends AttributeModifier {
 
-	FileLinkAttributeModifier( Brain brain, OutputDocument od, String url, String tagname, String attrname ) {
+	FileLinkTagAttributeModifier( Brain brain, OutputDocument od, String url, String tagname, String attrname ) {
 		super( brain, od, url, tagname, attrname );
 	}
 

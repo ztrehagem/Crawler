@@ -10,7 +10,6 @@ public class StyleAttributeModifier extends AttributeModifier {
 
 	StyleAttributeModifier( Brain brain, OutputDocument od, String url ) {
 		super( brain, od, url, null, "style" );
-		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
 	@Override
