@@ -38,7 +38,7 @@ public class PageLinkTagAttributeModifier extends AttributeModifier {
 		return brain.h.getFileName( fullpath );
 	}
 
-	private boolean isHTML( final String fullpath ) {
+	private boolean isHTML( String fullpath ) {
 		if( !fullpath.startsWith( "http:" ) && !fullpath.startsWith( "https:" ) )
 			return false;
 		final String ext = Tools.getExtension( fullpath );

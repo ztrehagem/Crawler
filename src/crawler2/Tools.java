@@ -18,7 +18,7 @@ class Tools {
 
 	}
 
-	static String makeFullPath( final String from, final String to ) {
+	static String makeFullPath( String from, String to ) {
 		try {
 			return new URI( from ).resolve( to ).toString();
 		}
@@ -55,7 +55,7 @@ class Tools {
 		return path.equals( "" ) ? null : path;
 	}
 
-	static String cssModify( final Brain brain, final String url, final String line ) {
+	static String cssModify( Brain brain, String url, String line ) {
 		final StringBuilder sb = new StringBuilder();
 		int last = 0;
 		int head = 0;
@@ -63,7 +63,8 @@ class Tools {
 		while( (head = line.indexOf( "url(", last )) != -1 ) {
 			sb.append( line.substring( last, head ) );
 
-			final boolean quote = line.charAt( head + 4 ) == '\'' || line.charAt( head + 4 ) == '"';
+			final char quotechar = line.charAt( head + 4 );
+			final boolean quote = quotechar == '\'' || quotechar == '"';
 			final int start = head + 4 + (quote ? 1 : 0);
 			final int end = line.indexOf( ")", start ) - (quote ? 1 : 0);
 
@@ -90,11 +91,11 @@ class Tools {
 		return sb.toString();
 	}
 
-	static void downloadToFile( final String url, final File dist ) throws FileNotFoundException, MalformedURLException, IOException {
+	static void downloadToFile( String url, File dist ) throws FileNotFoundException, MalformedURLException, IOException {
 		downloadToFile( new URL( url ), dist );
 	}
 
-	static void downloadToFile( final URL url, final File dist ) throws FileNotFoundException, IOException {
+	static void downloadToFile( URL url, File dist ) throws FileNotFoundException, IOException {
 		dist.createNewFile();
 
 		InputStream in = url.openStream();
@@ -113,11 +114,11 @@ class Tools {
 		in.close();
 	}
 
-	static String downloadToString( final String url ) throws MalformedURLException, IOException {
+	static String downloadToString( String url ) throws MalformedURLException, IOException {
 		return downloadToString( new URL( url ) );
 	}
 
-	static String downloadToString( final URL url ) throws IOException {
+	static String downloadToString( URL url ) throws IOException {
 
 		StringBuilder sb = new StringBuilder();
 		InputStreamReader in = new InputStreamReader( url.openStream() );
@@ -136,14 +137,14 @@ class Tools {
 		return sb.toString();
 	}
 
-	static void saveStringToFile( final File file, final String s ) throws IOException {
+	static void saveStringToFile( File file, String s ) throws IOException {
 		FileWriter w = new FileWriter( file );
 		w.write( s );
 		w.flush();
 		w.close();
 	}
 
-	static boolean in( final String s, final String[] a ) {
+	static boolean in( String s, String[] a ) {
 		for( String as : a ) {
 			if( s.equals( as ) )
 				return true;

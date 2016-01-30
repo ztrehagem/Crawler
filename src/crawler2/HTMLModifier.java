@@ -13,7 +13,7 @@ class HTMLModifier {
 	private final int				h;
 	private final OutputDocument	od;
 
-	HTMLModifier( final Brain brain, final String url, final String src, final int h ) {
+	HTMLModifier( Brain brain, String url, String src, int h ) {
 		this.brain = brain;
 		this.url = url;
 		this.h = h;

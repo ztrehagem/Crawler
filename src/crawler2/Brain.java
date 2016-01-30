@@ -6,13 +6,13 @@ import java.net.URL;
 
 class Brain {
 
-	final HTMLMaster	h;
-	final FileMaster	f;
-	final ThreadManager	t;
-	final File			root;
-	final Log			log;
-	final int			connectionNum;
-	final boolean		printLog;
+	final HTMLMaster		h;
+	final FileMaster		f;
+	final ThreadObserver	t;
+	final File				root;
+	final Log				log;
+	final int				connectionNum;
+	final boolean			printLog;
 
 	Brain( String url, String rootpath, int connectionNum, boolean printLog ) throws MalformedURLException {
 		this.connectionNum = connectionNum;
@@ -24,6 +24,6 @@ class Brain {
 
 		this.h = new HTMLMaster();
 		this.f = new FileMaster();
-		this.t = new ThreadManager( this );
+		this.t = new ThreadObserver( this );
 	}
 }

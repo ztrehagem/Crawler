@@ -2,5 +2,5 @@ package crawler2;
 
 interface Master {
 
-	String getFileName( final String url );
+	String getFileName( String url );
 }

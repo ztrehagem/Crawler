@@ -6,22 +6,27 @@ import java.util.UUID;
 
 class FileMaster implements Master {
 
-	private final Map<String, String> map;
+	private final Map<String, String>	map;
+
+	private static final String			PREFIX	= "file-";
 
 	FileMaster() {
 		this.map = new HashMap<>();
 	}
 
 	@Override
-	public String getFileName( final String url ) {
+	public String getFileName( String url ) {
 		return map.get( url );
 	}
 
-	synchronized boolean makeID( final String url, final String extension ) {
+	synchronized boolean makeID( String url, String extension ) {
 		if( map.containsKey( url ) )
 			return false;
-		final String suffix = (extension != null) ? "." + extension : "";
-		map.put( url, "file-" + UUID.randomUUID() + suffix );
+		register( url, (extension != null) ? "." + extension : "" );
 		return true;
+	}
+
+	private void register( String url, String suffix ) {
+		map.put( url, PREFIX + UUID.randomUUID() + suffix );
 	}
 }

@@ -13,7 +13,7 @@ class CSSSaveRunner implements Runnable {
 	private final String	url;
 	private final File		file;
 
-	CSSSaveRunner( final Brain brain, final String url ) {
+	CSSSaveRunner( Brain brain, String url ) {
 		this.brain = brain;
 		this.url = url;
 		this.file = new File( brain.root, brain.f.getFileName( url ) );

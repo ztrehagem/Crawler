@@ -10,7 +10,7 @@ class HTMLSaveRunner implements Runnable {
 	private final File		file;
 	private final int		h;
 
-	HTMLSaveRunner( final Brain brain, final String url, final int h ) {
+	HTMLSaveRunner( Brain brain, String url, int h ) {
 		this.brain = brain;
 		this.url = url;
 		this.file = new File( brain.root, brain.h.getFileName( url ) );
