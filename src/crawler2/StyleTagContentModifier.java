@@ -26,7 +26,7 @@ public class StyleTagContentModifier extends AttributeModifier {
 			return null;
 
 		// TODO ここ真面目にタグの中身だけにしたい
-		final String result = Tools.cssModify( brain, url, e.toString() );
+		final String result = CSSModifier.modify( brain, url, e.toString() );
 
 		od.replace( e, result );
 

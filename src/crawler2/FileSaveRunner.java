@@ -19,7 +19,7 @@ class FileSaveRunner implements Runnable {
 	public void run() {
 
 		try {
-			Tools.downloadToFile( url, file );
+			NetUtil.downloadToFile( url, file );
 		}
 		catch( IOException e ) {
 			brain.log.e( getClass(), "failed : " + e );

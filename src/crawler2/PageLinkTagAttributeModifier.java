@@ -25,7 +25,7 @@ public class PageLinkTagAttributeModifier extends AttributeModifier {
 		if( path == null )
 			return null;
 
-		final String fullpath = Tools.makeFullPath( url, path );
+		final String fullpath = StrUtil.makeFullPath( url, path );
 		if( fullpath == null )
 			return null;
 
@@ -41,8 +41,8 @@ public class PageLinkTagAttributeModifier extends AttributeModifier {
 	private boolean isHTML( String fullpath ) {
 		if( !fullpath.startsWith( "http:" ) && !fullpath.startsWith( "https:" ) )
 			return false;
-		final String ext = Tools.getExtension( fullpath );
-		return ext == null || Tools.in( ext, new String[] { "html", "htm", "asp", "aspx", "php", "cgi" } );
+		final String ext = StrUtil.getExtension( fullpath );
+		return ext == null || StrUtil.in( ext, new String[] { "html", "htm", "asp", "aspx", "php", "cgi" } );
 	}
 
 }

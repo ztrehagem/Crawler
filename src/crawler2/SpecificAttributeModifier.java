@@ -23,11 +23,11 @@ public class SpecificAttributeModifier extends AttributeModifier {
 		if( path == null )
 			return null;
 
-		final String fullpath = Tools.makeFullPath( url, path );
+		final String fullpath = StrUtil.makeFullPath( url, path );
 		if( fullpath == null )
 			return null;
 
-		final String ext = Tools.getExtension( path );
+		final String ext = StrUtil.getExtension( path );
 
 		if( brain.f.makeID( fullpath, ext ) )
 			brain.t.offer( new FileSaveRunner( brain, fullpath ) );

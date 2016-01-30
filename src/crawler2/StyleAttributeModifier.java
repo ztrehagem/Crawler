@@ -23,7 +23,7 @@ public class StyleAttributeModifier extends AttributeModifier {
 		if( value == null )
 			return null;
 
-		return Tools.cssModify( brain, url, value );
+		return CSSModifier.modify( brain, url, value );
 	}
 
 }

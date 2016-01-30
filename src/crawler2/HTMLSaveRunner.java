@@ -23,11 +23,11 @@ class HTMLSaveRunner implements Runnable {
 	public void run() {
 
 		try {
-			final String src = Tools.downloadToString( url );
+			final String src = NetUtil.downloadToString( url );
 
 			final HTMLModifier r = new HTMLModifier( brain, url, src, h );
 
-			Tools.saveStringToFile( file, r.getResult() );
+			StrUtil.saveToFile( file, r.getResult() );
 		}
 		catch( IOException e ) {
 			brain.log.e( getClass(), "failed : " + e );

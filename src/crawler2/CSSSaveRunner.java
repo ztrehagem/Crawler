@@ -30,7 +30,7 @@ class CSSSaveRunner implements Runnable {
 
 			String line;
 			while( (line = r.readLine()) != null )
-				w.write( Tools.cssModify( brain, url, line ) + '\n' );
+				w.write( CSSModifier.modify( brain, url, line ) + '\n' );
 
 			r.close();
 			w.close();
