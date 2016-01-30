@@ -1,29 +1,36 @@
 package crawler2;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import net.htmlparser.jericho.MasonTagTypes;
 import net.htmlparser.jericho.MicrosoftConditionalCommentTagTypes;
 import net.htmlparser.jericho.PHPTagTypes;
 
 public class Crawler {
 
-	final FileMaster		f;
-	final HTMLMaster		h;
-	final ThreadMaster		t;
-	final File				root;
+	private final Brain				brain;
+	private final String			url;
+	private final int				level;
 
-	public static int		ConnectionNumLimit	= 16;
-	public static String	ResultDirectoryPath	= "./result";
-	public static boolean	PrintLog			= false;
+	private static final String		default_rootDirPath		= "./result";
+	private static final int		default_connectionNum	= 16;
+	private static final boolean	default_printLog		= false;
 
-	private final String	url;
-	private final int		level;
+	public Crawler( String url, int level ) throws MalformedURLException, URISyntaxException, InterruptedException {
+		this( url, level, default_rootDirPath, default_connectionNum, default_printLog );
+	}
 
-	public Crawler( String url, int level ) throws URISyntaxException, MalformedURLException, InterruptedException {
+	public Crawler( String url, int level, boolean printLog ) throws MalformedURLException, URISyntaxException, InterruptedException {
+		this( url, level, default_rootDirPath, default_connectionNum, printLog );
+	}
+
+	public Crawler( String url, int level, int connectionNum, boolean printLog ) throws MalformedURLException, URISyntaxException, InterruptedException {
+		this( url, level, default_rootDirPath, connectionNum, printLog );
+	}
+
+	public Crawler( String url, int level, String rootDirPath, int connectionNum, boolean printLog ) throws URISyntaxException, MalformedURLException, InterruptedException {
 		initialize_Jericho();
 
 		url = (url.contains( ":" ) ? "" : "file:") + url;
@@ -32,31 +39,26 @@ public class Crawler {
 		this.url = url;
 		this.level = level;
 
-		this.root = new File( new File( ResultDirectoryPath ), String.valueOf( System.currentTimeMillis() ) + "-"
-			+ new URL( url ).getHost().replace( ':', '-' ).replace( '.', '-' ) );
-		this.root.mkdirs();
-
-		this.f = new FileMaster();
-		this.h = new HTMLMaster();
-		this.t = new ThreadMaster();
+		this.brain = new Brain( url, rootDirPath, connectionNum, printLog );
 	}
 
-	public void process() throws InterruptedException {
-		Log.open( root );
+	public void exec() throws InterruptedException, IOException {
 
-		Log.v( getClass(), "target '" + url + "'" );
-		Log.v( getClass(), "root '" + this.root + "'" );
+		brain.log.open();
 
-		Log.v( getClass(), "start" );
+		brain.log.v( getClass(), "target '" + url + "'" );
+		brain.log.v( getClass(), "root '" + brain.root + "'" );
 
-		h.makeStartID( url );
-		t.exec( new HTMLSaveRunner( this, url, level ) );
-		t.awaitEmpty();
-		t.shutdown();
+		brain.log.v( getClass(), "start" );
 
-		Log.v( getClass(), "done!" );
+		brain.h.makeStartID( url );
+		brain.t.offer( new HTMLSaveRunner( brain, url, level ) );
+		brain.t.await();
+		brain.t.shutdown();
 
-		Log.close();
+		brain.log.v( getClass(), "done!" );
+
+		brain.log.close();
 	}
 
 	private static void initialize_Jericho() {

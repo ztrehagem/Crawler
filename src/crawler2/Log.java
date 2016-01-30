@@ -1,73 +1,54 @@
 package crawler2;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.Date;
 
 class Log {
 
-	private Log() {
+	private final Brain	brain;
+	private PrintWriter	logfile;
 
+	Log( Brain brain ) {
+		this.brain = brain;
 	}
 
-	public static void v( final Class<?> cls, final String msg ) {
-		print( System.out, cls, msg );
+	public void v( Class<?> cls, String msg ) {
+		print( System.out, format( cls, msg ) );
 	}
 
-	public static void e( final Class<?> cls, final String msg ) {
-		print( System.err, cls, msg );
+	public void e( Class<?> cls, String msg ) {
+		print( System.err, format( cls, msg ) );
 	}
 
-	private static void print( final PrintStream ps, final Class<?> cls, final String msg ) {
-		final String s = format( cls, msg );
-		if( w != null ) {
-			try {
-				w.write( s );
-				w.flush();
-			}
-			catch( IOException e ) {
-			}
-		}
-		if( Crawler.PrintLog )
+	private void print( PrintStream ps, String s ) {
+		if( logfile != null )
+			logfile.println( s );
+		if( brain.printLog )
 			ps.println( s );
 	}
 
-	private static String format( final Class<?> cls, final String msg ) {
-		return "[" + cls.getSimpleName() + " " + getTime() + "]\n" + msg + "\n";
+	private String format( Class<?> cls, String msg ) {
+		return "[" + cls.getSimpleName() + " " + getTime() + "]" + System.lineSeparator() + msg + System.lineSeparator();
 	}
 
-	private static String getTime() {
+	private String getTime() {
 		return DateFormat.getDateTimeInstance().format( new Date( System.currentTimeMillis() ) );
 	}
 
-	private static FileWriter w;
-
-	public static void open( File root ) {
-		if( w != null )
+	void open() throws IOException {
+		if( logfile != null )
 			return;
-
-		final File file = new File( root, "log.txt" );
-		try {
-			file.createNewFile();
-			w = new FileWriter( file );
-		}
-		catch( IOException e ) {
-			Log.v( Log.class, "cant create log file" );
-		}
+		final File file = new File( brain.root, "log.txt" );
+		file.createNewFile();
+		this.logfile = new PrintWriter( file );
 	}
 
-	public static void close() {
-		if( w != null ) {
-			try {
-				w.close();
-			}
-			catch( IOException e ) {
-				e.printStackTrace();
-			}
-			w = null;
-		}
+	void close() throws IOException {
+		this.logfile.close();
+		this.logfile = null;
 	}
 }
