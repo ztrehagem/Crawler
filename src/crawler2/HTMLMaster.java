@@ -9,7 +9,7 @@ class HTMLMaster implements Master {
 	private final Map<String, HTMLMasterMapV>	map;
 	private static final String					PREFIX						= "page-";
 	private static final String					SUFFIX						= ".html";
-	private static final String					default_startPageFileName	= PREFIX + "root" + SUFFIX;
+	private static final String					default_startPageFileTitle	= "root";
 
 	HTMLMaster() {
 		this.map = new HashMap<>();
@@ -21,7 +21,7 @@ class HTMLMaster implements Master {
 	}
 
 	void makeStartID( String url ) {
-		makeStartID( url, default_startPageFileName );
+		makeStartID( url, default_startPageFileTitle );
 	}
 
 	void makeStartID( String url, String filetitle ) {
