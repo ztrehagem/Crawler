@@ -11,6 +11,9 @@ import java.net.URL;
 
 class NetUtil {
 
+	private NetUtil() {
+	}
+
 	static void downloadToFile( String url, File dist ) throws FileNotFoundException, MalformedURLException, IOException {
 		downloadToFile( new URL( url ), dist );
 	}
