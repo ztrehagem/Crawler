@@ -1,14 +1,18 @@
 package crawler2;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 class ThreadObserver {
+
+	private int								add		= 0;
+	private int								remove	= 0;
 
 	private final Brain						brain;
 	private final ExecutorService			exe;
@@ -17,7 +21,7 @@ class ThreadObserver {
 	ThreadObserver( Brain brain ) {
 		this.brain = brain;
 		exe = Executors.newFixedThreadPool( brain.connectionNum );
-		q = new ArrayBlockingQueue<>( Short.MAX_VALUE );
+		q = new LinkedBlockingQueue<>();
 	}
 
 	void offer( Callable<?> c ) {
@@ -28,12 +32,13 @@ class ThreadObserver {
 		addQ( exe.submit( r ) );
 	}
 
-	private void addQ( Future<?> f ) {
+	synchronized private void addQ( Future<?> f ) {
 		try {
 			q.put( f );
+			this.add += 1;
 		}
 		catch( InterruptedException e ) {
-			brain.log.e( getClass(), "InterruptedException in offer : " + e );
+			brain.log.e( getClass(), "Interrupted in addQ" );
 		}
 	}
 
@@ -42,6 +47,7 @@ class ThreadObserver {
 		while( (f = q.poll()) != null ) {
 			try {
 				f.get();
+				this.remove += 1;
 			}
 			catch( InterruptedException e ) {
 				brain.log.e( getClass(), "Interrupted : " + e );
@@ -55,5 +61,13 @@ class ThreadObserver {
 
 	void shutdown() {
 		this.exe.shutdown();
+		brain.log.v( getClass(), "shutdown..." );
+		try {
+			this.exe.awaitTermination( 30, TimeUnit.SECONDS );
+		}
+		catch( InterruptedException e ) {
+			brain.log.e( getClass(), "Interrupted in awaitTermination" );
+		}
+		brain.log.v( getClass(), "created : " + this.add + "\ncompleted : " + this.remove );
 	}
 }

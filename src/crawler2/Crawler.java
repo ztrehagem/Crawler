@@ -42,7 +42,7 @@ public class Crawler {
 		this.brain = new Brain( url, rootDirPath, connectionNum, printLog );
 	}
 
-	public void exec() throws InterruptedException, IOException {
+	public void exec() throws IOException {
 
 		brain.log.open();
 
@@ -51,10 +51,17 @@ public class Crawler {
 
 		brain.log.v( getClass(), "start" );
 
-		brain.h.makeStartID( url );
-		brain.t.offer( new HTMLSaveRunner( brain, url, level ) );
-		brain.t.await();
-		brain.t.shutdown();
+		try {
+			brain.h.makeStartID( url );
+			brain.t.offer( new HTMLSaveRunner( brain, url, level ) );
+			brain.t.await();
+		}
+		catch( Exception e ) {
+			brain.log.e( getClass(), "Exception in Crawler" );
+		}
+		finally {
+			brain.t.shutdown();
+		}
 
 		brain.log.v( getClass(), "done!" );
 
