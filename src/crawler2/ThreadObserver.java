@@ -20,8 +20,9 @@ class ThreadObserver {
 
 	ThreadObserver( Brain brain ) {
 		this.brain = brain;
-		exe = Executors.newFixedThreadPool( brain.connectionNum );
-		q = new LinkedBlockingQueue<>();
+		this.exe = Executors.newFixedThreadPool( brain.connectionNum );
+		this.q = new LinkedBlockingQueue<>();
+		//		this.q = new ArrayBlockingQueue<>( 4 );
 		this.result = new ResultHolder( brain );
 	}
 
@@ -32,7 +33,7 @@ class ThreadObserver {
 			addQ( exe.submit( c ) );
 		}
 		catch( Exception e ) {
-			brain.log.e( getClass(), "failed submit to executor" );
+			brain.log.e( getClass(), "failed submit : " + e );
 		}
 	}
 
@@ -48,16 +49,18 @@ class ThreadObserver {
 		Consumer<Future<?>> consumer = new QConsumer( brain, result, q );
 
 		while( !q.isEmpty() ) {
+			try {
+				Thread.sleep( 1000 );
+				// これが終了しないとプログラムが終了しない
+				// 開始前のFutureについてもforEachしてしまう
+			}
+			catch( InterruptedException e ) {
+			}
+
 			q.forEach( consumer );
 
 			if( brain.printDebugLog )
 				brain.log.d( getClass(), "Q size : " + q.size() );
-
-			try {
-				Thread.sleep( 1000 ); // これが終了しないとプログラムが終了しない
-			}
-			catch( InterruptedException e ) {
-			}
 		}
 	}
 
