@@ -11,8 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 class ThreadObserver {
 
-	private int								add		= 0;
-	private int								remove	= 0;
+	private int								found, submit, offer, complete;
 
 	private final Brain						brain;
 	private final ExecutorService			exe;
@@ -22,23 +21,36 @@ class ThreadObserver {
 		this.brain = brain;
 		exe = Executors.newFixedThreadPool( brain.connectionNum );
 		q = new LinkedBlockingQueue<>();
+		found = submit = offer = complete = 0;
 	}
 
 	void offer( Callable<?> c ) {
-		addQ( exe.submit( c ) );
+		this.found += 1;
+
+		try {
+			addQ( exe.submit( c ) );
+		}
+		catch( Exception e ) {
+			brain.log.e( getClass(), "failed submit to executor" );
+		}
 	}
 
 	void offer( Runnable r ) {
-		addQ( exe.submit( r ) );
+		this.found += 1;
+
+		try {
+			addQ( exe.submit( r ) );
+		}
+		catch( Exception e ) {
+			brain.log.e( getClass(), "failed submit to executor" );
+		}
 	}
 
 	synchronized private void addQ( Future<?> f ) {
-		try {
-			q.put( f );
-			this.add += 1;
-		}
-		catch( InterruptedException e ) {
-			brain.log.e( getClass(), "Interrupted in addQ" );
+		this.submit += 1;
+
+		if( q.offer( f ) ) {
+			this.offer += 1;
 		}
 	}
 
@@ -47,7 +59,6 @@ class ThreadObserver {
 		while( (f = q.poll()) != null ) {
 			try {
 				f.get();
-				this.remove += 1;
 			}
 			catch( InterruptedException e ) {
 				brain.log.e( getClass(), "Interrupted : " + e );
@@ -55,6 +66,9 @@ class ThreadObserver {
 			catch( ExecutionException e ) {
 				brain.log.e( getClass(), "Exception : " + e );
 				e.printStackTrace();
+			}
+			finally {
+				this.complete += 1;
 			}
 		}
 	}
@@ -68,6 +82,6 @@ class ThreadObserver {
 		catch( InterruptedException e ) {
 			brain.log.e( getClass(), "Interrupted in awaitTermination" );
 		}
-		brain.log.v( getClass(), "created : " + this.add + "\ncompleted : " + this.remove );
+		brain.log.v( getClass(), "   found : " + this.found + "\n" + "  submit : " + this.submit + "\n" + "   offer : " + this.offer + "\n" + "complete : " + this.complete );
 	}
 }
