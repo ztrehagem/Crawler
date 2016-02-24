@@ -3,7 +3,7 @@ package crawler2;
 import java.io.File;
 import java.util.concurrent.Callable;
 
-class HTMLSaveRunner implements Callable<SaveRunnerResult> {
+class HTMLSaveRunner implements Callable<Void> {
 
 	private final Brain		brain;
 	private final String	url;
@@ -20,12 +20,13 @@ class HTMLSaveRunner implements Callable<SaveRunnerResult> {
 	}
 
 	@Override
-	public SaveRunnerResult call() throws Exception {
+	public Void call() throws Exception {
 
 		final String src = NetUtil.downloadToString( url );
 		final HTMLModifier r = new HTMLModifier( brain, url, src, h );
 		StrUtil.saveToFile( file, r.getResult() );
 
-		return new SaveRunnerResult( url, file.toString() );
+		brain.log.i( getClass(), "saved '" + url + "' -> '" + file + "'" );
+		return null;
 	}
 }

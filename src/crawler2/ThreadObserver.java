@@ -1,5 +1,6 @@
 package crawler2;
 
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -11,11 +12,11 @@ import java.util.concurrent.TimeUnit;
 
 class ThreadObserver {
 
-	private int												found, submit, offer, complete, success, failed;
+	private int								found, submit, offer, complete, success, failed;
 
-	private final Brain										brain;
-	private final ExecutorService							exe;
-	private final BlockingQueue<Future<SaveRunnerResult>>	q;
+	private final Brain						brain;
+	private final ExecutorService			exe;
+	private final BlockingQueue<Future<?>>	q;
 
 	ThreadObserver( Brain brain ) {
 		this.brain = brain;
@@ -24,7 +25,7 @@ class ThreadObserver {
 		found = submit = offer = complete = success = failed = 0;
 	}
 
-	void offer( Callable<SaveRunnerResult> c ) {
+	void offer( Callable<?> c ) {
 		this.found += 1;
 
 		try {
@@ -35,7 +36,7 @@ class ThreadObserver {
 		}
 	}
 
-	synchronized private void addQ( Future<SaveRunnerResult> f ) {
+	synchronized private void addQ( Future<?> f ) {
 		this.submit += 1;
 
 		if( q.offer( f ) ) {
@@ -44,33 +45,19 @@ class ThreadObserver {
 	}
 
 	void await() {
-		Future<SaveRunnerResult> f;
+		Future<?> f;
+
+		Thread t = null;
 
 		if( brain.printDebugLog ) {
-			final Thread t = new Thread() {
-
-				@Override
-				public void run() {
-					int size;
-					do {
-						try {
-							Thread.sleep( 3000 );
-						}
-						catch( InterruptedException e ) {
-						}
-						size = q.size();
-						brain.log.d( getClass(), "Q size : " + size );
-					} while( size > 0 );
-				}
-			};
+			t = new QsizeThread( brain, q );
 			t.start();
 		}
 
 		while( (f = q.poll()) != null ) {
 			try {
-				SaveRunnerResult r = f.get();
+				f.get();
 				this.success += 1;
-				brain.log.i( getClass(), "saved '" + r.url + "' -> '" + r.filename + "'" );
 			}
 			catch( InterruptedException e ) {
 				this.failed += 1;
@@ -83,6 +70,10 @@ class ThreadObserver {
 			finally {
 				this.complete += 1;
 			}
+		}
+
+		if( brain.printDebugLog ) {
+			t.interrupt();
 		}
 	}
 
@@ -98,5 +89,31 @@ class ThreadObserver {
 
 		final String endl = System.lineSeparator();
 		brain.log.i( getClass(), "    found : " + this.found + endl + "   submit : " + this.submit + endl + "    offer : " + this.offer + endl + " complete : " + this.complete + endl + "  success : " + this.success + endl + "   failed : " + this.failed );
+	}
+
+	private class QsizeThread extends Thread {
+
+		private final Brain		brain;
+		private final Queue<?>	q;
+
+		public QsizeThread( Brain brain, Queue<?> q ) {
+			this.brain = brain;
+			this.q = q;
+		}
+
+		@Override
+		public void run() {
+			try {
+				while( true ) {
+					sleep( 5000 );
+					brain.log.d( getClass(), "Q size : " + q.size() );
+					if( interrupted() )
+						break;
+				}
+			}
+			catch( InterruptedException e ) {
+
+			}
+		}
 	}
 }

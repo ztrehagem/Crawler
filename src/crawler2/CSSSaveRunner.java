@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
-class CSSSaveRunner implements Callable<SaveRunnerResult> {
+class CSSSaveRunner implements Callable<Void> {
 
 	private final Brain		brain;
 	private final String	url;
@@ -20,7 +20,7 @@ class CSSSaveRunner implements Callable<SaveRunnerResult> {
 	}
 
 	@Override
-	public SaveRunnerResult call() throws Exception {
+	public Void call() throws Exception {
 
 		FileWriter w = new FileWriter( file );
 		BufferedReader r = new BufferedReader( new InputStreamReader( new URL( url ).openStream() ) );
@@ -32,7 +32,8 @@ class CSSSaveRunner implements Callable<SaveRunnerResult> {
 		r.close();
 		w.close();
 
-		return new SaveRunnerResult( url, file.toString() );
+		brain.log.i( getClass(), "saved '" + url + "' -> '" + file + "'" );
+		return null;
 	}
 
 }
