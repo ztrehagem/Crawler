@@ -12,11 +12,11 @@ class Brain {
 	final File				root;
 	final Log				log;
 	final int				connectionNum;
-	final boolean			printLog;
+	final boolean			printDebugLog;
 
-	Brain( String url, String rootpath, int connectionNum, boolean printLog ) throws MalformedURLException {
+	Brain( String url, String rootpath, int connectionNum, boolean printDebugLog ) throws MalformedURLException {
 		this.connectionNum = connectionNum;
-		this.printLog = printLog;
+		this.printDebugLog = printDebugLog;
 
 		this.root = new File( new File( rootpath ), String.valueOf( System.currentTimeMillis() ) + "-" + new URL( url ).getHost().replace( ':', '-' ).replace( '.', '-' ) );
 		this.root.mkdirs();

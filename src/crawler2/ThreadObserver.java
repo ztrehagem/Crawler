@@ -49,7 +49,7 @@ class ThreadObserver {
 			try {
 				SaveRunnerResult r = f.get();
 				this.success += 1;
-				brain.log.v( getClass(), "saved '" + r.url + "' -> '" + r.filename + "'" );
+				brain.log.i( getClass(), "saved '" + r.url + "' -> '" + r.filename + "'" );
 			}
 			catch( InterruptedException e ) {
 				this.failed += 1;
@@ -67,13 +67,13 @@ class ThreadObserver {
 
 	void shutdown() {
 		this.exe.shutdown();
-		brain.log.v( getClass(), "shutdown..." );
+		brain.log.i( getClass(), "shutdown..." );
 		try {
 			this.exe.awaitTermination( 30, TimeUnit.SECONDS );
 		}
 		catch( InterruptedException e ) {
 			brain.log.e( getClass(), "Interrupted in awaitTermination" );
 		}
-		brain.log.v( getClass(), "    found : " + this.found + "\n   submit : " + this.submit + "\n    offer : " + this.offer + "\n complete : " + this.complete + "\n  success : " + this.success + "\n   failed : " + this.failed );
+		brain.log.i( getClass(), "    found : " + this.found + "\n   submit : " + this.submit + "\n    offer : " + this.offer + "\n complete : " + this.complete + "\n  success : " + this.success + "\n   failed : " + this.failed );
 	}
 }

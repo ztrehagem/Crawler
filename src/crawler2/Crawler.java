@@ -16,14 +16,14 @@ public class Crawler {
 
 	private static final String		default_rootDirPath		= "./result";
 	private static final int		default_connectionNum	= 16;
-	private static final boolean	default_printLog		= false;
+	private static final boolean	default_printDebugLog		= false;
 
 	public Crawler( String url, int level ) throws MalformedURLException, URISyntaxException, InterruptedException {
-		this( url, level, default_rootDirPath, default_connectionNum, default_printLog );
+		this( url, level, default_rootDirPath, default_connectionNum, default_printDebugLog );
 	}
 
-	public Crawler( String url, int level, boolean printLog ) throws MalformedURLException, URISyntaxException, InterruptedException {
-		this( url, level, default_rootDirPath, default_connectionNum, printLog );
+	public Crawler( String url, int level, boolean printDebugLog ) throws MalformedURLException, URISyntaxException, InterruptedException {
+		this( url, level, default_rootDirPath, default_connectionNum, printDebugLog );
 	}
 
 	public Crawler( String url, int level, int connectionNum, boolean printLog ) throws MalformedURLException, URISyntaxException, InterruptedException {
@@ -46,10 +46,10 @@ public class Crawler {
 
 		brain.log.open();
 
-		brain.log.v( getClass(), "target '" + url + "'" );
-		brain.log.v( getClass(), "root '" + brain.root + "'" );
+		brain.log.i( getClass(), "target '" + url + "'" );
+		brain.log.i( getClass(), "root '" + brain.root + "'" );
 
-		brain.log.v( getClass(), "start" );
+		brain.log.i( getClass(), "start" );
 
 		try {
 			brain.h.makeStartID( url );
@@ -63,7 +63,7 @@ public class Crawler {
 			brain.t.shutdown();
 		}
 
-		brain.log.v( getClass(), "done!" );
+		brain.log.i( getClass(), "done!" );
 
 		brain.log.close();
 	}
