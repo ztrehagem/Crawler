@@ -9,24 +9,24 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 class ThreadObserver {
-
-	private int								found, submit, offer, complete, success, failed;
 
 	private final Brain						brain;
 	private final ExecutorService			exe;
 	private final BlockingQueue<Future<?>>	q;
+	private final ResultHolder				result;
 
 	ThreadObserver( Brain brain ) {
 		this.brain = brain;
 		exe = Executors.newFixedThreadPool( brain.connectionNum );
 		q = new LinkedBlockingQueue<>();
-		found = submit = offer = complete = success = failed = 0;
+		this.result = new ResultHolder( brain );
 	}
 
 	void offer( Callable<?> c ) {
-		this.found += 1;
+		result.found();
 
 		try {
 			addQ( exe.submit( c ) );
@@ -37,43 +37,27 @@ class ThreadObserver {
 	}
 
 	private void addQ( Future<?> f ) {
-		this.submit += 1;
+		result.submitted();
 
 		if( q.offer( f ) ) {
-			this.offer += 1;
+			result.offered();
 		}
 	}
 
 	void await() {
-		Future<?> f;
+		Consumer<Future<?>> consumer = new QConsumer( brain, result, q );
 
-		Thread t = null;
+		while( !q.isEmpty() ) {
+			q.forEach( consumer );
 
-		if( brain.printDebugLog ) {
-			t = new QsizeThread( brain, q );
-			t.start();
-		}
+			if( brain.printDebugLog )
+				brain.log.d( getClass(), "Q size : " + q.size() );
 
-		while( (f = q.poll()) != null ) {
 			try {
-				f.get();
-				this.success += 1;
+				Thread.sleep( 1000 ); // これが終了しないとプログラムが終了しない
 			}
 			catch( InterruptedException e ) {
-				this.failed += 1;
-				brain.log.e( getClass(), "Interrupted : " + e );
 			}
-			catch( ExecutionException e ) {
-				this.failed += 1;
-				brain.log.e( getClass(), "failed : " + e.getCause() );
-			}
-			finally {
-				this.complete += 1;
-			}
-		}
-
-		if( brain.printDebugLog ) {
-			t.interrupt();
 		}
 	}
 
@@ -87,33 +71,43 @@ class ThreadObserver {
 			brain.log.e( getClass(), "Interrupted in awaitTermination" );
 		}
 
-		final String endl = System.lineSeparator();
-		brain.log.i( getClass(), "    found : " + this.found + endl + "   submit : " + this.submit + endl + "    offer : " + this.offer + endl + " complete : " + this.complete + endl + "  success : " + this.success + endl + "   failed : " + this.failed );
+		this.result.print();
 	}
 
-	private class QsizeThread extends Thread {
+	private class QConsumer implements Consumer<Future<?>> {
 
-		private final Brain		brain;
-		private final Queue<?>	q;
+		private final Brain				brain;
+		private final ResultHolder		result;
+		private final Queue<Future<?>>	q;
 
-		QsizeThread( Brain brain, Queue<?> q ) {
+		QConsumer( Brain brain, ResultHolder result, Queue<Future<?>> q ) {
 			this.brain = brain;
+			this.result = result;
 			this.q = q;
 		}
 
 		@Override
-		public void run() {
-			try {
-				while( true ) {
-					sleep( 5000 );
-					brain.log.d( getClass(), "Q size : " + q.size() );
-					if( interrupted() )
-						break;
+		public void accept( Future<?> t ) {
+			if( t.isDone() ) {
+				q.remove( t );
+
+				try {
+					t.get();
+					result.succeeded();
+				}
+				catch( InterruptedException e ) {
+					result.failed();
+					brain.log.e( getClass(), "Interrupted : " + e );
+				}
+				catch( ExecutionException e ) {
+					result.failed();
+					brain.log.e( getClass(), "failed : " + e.getCause() );
+				}
+				finally {
+					result.completed();
 				}
 			}
-			catch( InterruptedException e ) {
-
-			}
 		}
+
 	}
 }
