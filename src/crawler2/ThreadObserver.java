@@ -1,6 +1,5 @@
 package crawler2;
 
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -11,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-class ThreadObserver {
+class ThreadObserver implements Consumer<Future<?>> {
 
 	private final Brain						brain;
 	private final ExecutorService			exe;
@@ -46,7 +45,6 @@ class ThreadObserver {
 	}
 
 	void await() {
-		Consumer<Future<?>> consumer = new QConsumer( brain, result, q );
 
 		while( !q.isEmpty() ) {
 			try {
@@ -57,7 +55,7 @@ class ThreadObserver {
 			catch( InterruptedException e ) {
 			}
 
-			q.forEach( consumer );
+			q.forEach( this );
 
 			if( brain.printDebugLog )
 				brain.log.d( getClass(), "Q size : " + q.size() );
@@ -77,40 +75,27 @@ class ThreadObserver {
 		this.result.print();
 	}
 
-	private class QConsumer implements Consumer<Future<?>> {
+	@Override
+	public void accept( Future<?> t ) {
+		if( t.isDone() ) {
+			q.remove( t );
 
-		private final Brain				brain;
-		private final ResultHolder		result;
-		private final Queue<Future<?>>	q;
-
-		QConsumer( Brain brain, ResultHolder result, Queue<Future<?>> q ) {
-			this.brain = brain;
-			this.result = result;
-			this.q = q;
-		}
-
-		@Override
-		public void accept( Future<?> t ) {
-			if( t.isDone() ) {
-				q.remove( t );
-
-				try {
-					t.get();
-					result.succeeded();
-				}
-				catch( InterruptedException e ) {
-					result.failed();
-					brain.log.e( getClass(), "Interrupted : " + e );
-				}
-				catch( ExecutionException e ) {
-					result.failed();
-					brain.log.e( getClass(), "failed : " + e.getCause() );
-				}
-				finally {
-					result.completed();
-				}
+			try {
+				t.get();
+				result.succeeded();
+			}
+			catch( InterruptedException e ) {
+				result.failed();
+				brain.log.e( getClass(), "Interrupted : " + e );
+			}
+			catch( ExecutionException e ) {
+				result.failed();
+				brain.log.e( getClass(), "failed : " + e.getCause() );
+			}
+			finally {
+				result.completed();
 			}
 		}
-
 	}
+
 }
