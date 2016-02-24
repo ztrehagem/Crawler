@@ -36,7 +36,7 @@ class ThreadObserver {
 		}
 	}
 
-	synchronized private void addQ( Future<?> f ) {
+	private void addQ( Future<?> f ) {
 		this.submit += 1;
 
 		if( q.offer( f ) ) {
@@ -96,7 +96,7 @@ class ThreadObserver {
 		private final Brain		brain;
 		private final Queue<?>	q;
 
-		public QsizeThread( Brain brain, Queue<?> q ) {
+		QsizeThread( Brain brain, Queue<?> q ) {
 			this.brain = brain;
 			this.q = q;
 		}
