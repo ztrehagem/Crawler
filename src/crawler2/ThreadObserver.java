@@ -45,6 +45,27 @@ class ThreadObserver {
 
 	void await() {
 		Future<SaveRunnerResult> f;
+
+		if( brain.printDebugLog ) {
+			final Thread t = new Thread() {
+
+				@Override
+				public void run() {
+					int size;
+					do {
+						try {
+							Thread.sleep( 3000 );
+						}
+						catch( InterruptedException e ) {
+						}
+						size = q.size();
+						brain.log.d( getClass(), "Q size : " + size );
+					} while( size > 0 );
+				}
+			};
+			t.start();
+		}
+
 		while( (f = q.poll()) != null ) {
 			try {
 				SaveRunnerResult r = f.get();
@@ -74,6 +95,8 @@ class ThreadObserver {
 		catch( InterruptedException e ) {
 			brain.log.e( getClass(), "Interrupted in awaitTermination" );
 		}
-		brain.log.i( getClass(), "    found : " + this.found + "\n   submit : " + this.submit + "\n    offer : " + this.offer + "\n complete : " + this.complete + "\n  success : " + this.success + "\n   failed : " + this.failed );
+
+		final String endl = System.lineSeparator();
+		brain.log.i( getClass(), "    found : " + this.found + endl + "   submit : " + this.submit + endl + "    offer : " + this.offer + endl + " complete : " + this.complete + endl + "  success : " + this.success + endl + "   failed : " + this.failed );
 	}
 }
