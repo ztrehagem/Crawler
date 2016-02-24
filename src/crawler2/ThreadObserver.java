@@ -11,20 +11,20 @@ import java.util.concurrent.TimeUnit;
 
 class ThreadObserver {
 
-	private int								found, submit, offer, complete;
+	private int												found, submit, offer, complete, success, failed;
 
-	private final Brain						brain;
-	private final ExecutorService			exe;
-	private final BlockingQueue<Future<?>>	q;
+	private final Brain										brain;
+	private final ExecutorService							exe;
+	private final BlockingQueue<Future<SaveRunnerResult>>	q;
 
 	ThreadObserver( Brain brain ) {
 		this.brain = brain;
 		exe = Executors.newFixedThreadPool( brain.connectionNum );
 		q = new LinkedBlockingQueue<>();
-		found = submit = offer = complete = 0;
+		found = submit = offer = complete = success = failed = 0;
 	}
 
-	void offer( Callable<?> c ) {
+	void offer( Callable<SaveRunnerResult> c ) {
 		this.found += 1;
 
 		try {
@@ -35,18 +35,7 @@ class ThreadObserver {
 		}
 	}
 
-	void offer( Runnable r ) {
-		this.found += 1;
-
-		try {
-			addQ( exe.submit( r ) );
-		}
-		catch( Exception e ) {
-			brain.log.e( getClass(), "failed submit to executor" );
-		}
-	}
-
-	synchronized private void addQ( Future<?> f ) {
+	synchronized private void addQ( Future<SaveRunnerResult> f ) {
 		this.submit += 1;
 
 		if( q.offer( f ) ) {
@@ -55,17 +44,20 @@ class ThreadObserver {
 	}
 
 	void await() {
-		Future<?> f;
+		Future<SaveRunnerResult> f;
 		while( (f = q.poll()) != null ) {
 			try {
-				f.get();
+				SaveRunnerResult r = f.get();
+				this.success += 1;
+				brain.log.v( getClass(), "saved '" + r.url + "' -> '" + r.filename + "'" );
 			}
 			catch( InterruptedException e ) {
+				this.failed += 1;
 				brain.log.e( getClass(), "Interrupted : " + e );
 			}
 			catch( ExecutionException e ) {
-				brain.log.e( getClass(), "Exception : " + e );
-				e.printStackTrace();
+				this.failed += 1;
+				brain.log.e( getClass(), "failed : " + e );
 			}
 			finally {
 				this.complete += 1;
@@ -82,6 +74,6 @@ class ThreadObserver {
 		catch( InterruptedException e ) {
 			brain.log.e( getClass(), "Interrupted in awaitTermination" );
 		}
-		brain.log.v( getClass(), "   found : " + this.found + "\n" + "  submit : " + this.submit + "\n" + "   offer : " + this.offer + "\n" + "complete : " + this.complete );
+		brain.log.v( getClass(), "    found : " + this.found + "\n   submit : " + this.submit + "\n    offer : " + this.offer + "\n complete : " + this.complete + "\n  success : " + this.success + "\n   failed : " + this.failed );
 	}
 }

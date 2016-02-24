@@ -1,31 +1,23 @@
 package crawler2;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.concurrent.Callable;
 
-class FileSaveRunner implements Runnable {
+class FileSaveRunner implements Callable<SaveRunnerResult> {
 
-	private final Brain		brain;
 	private final String	url;
 	private final File		file;
 
 	FileSaveRunner( Brain brain, String url ) {
-		this.brain = brain;
 		this.url = url;
 		this.file = new File( brain.root, brain.f.getFileName( url ) );
 	}
 
 	@Override
-	public void run() {
+	public SaveRunnerResult call() throws Exception {
 
-		try {
-			NetUtil.downloadToFile( url, file );
-		}
-		catch( IOException e ) {
-			brain.log.e( getClass(), "failed : " + e );
-			return;
-		}
+		NetUtil.downloadToFile( url, file );
 
-		brain.log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
+		return new SaveRunnerResult( url, file.toString() );
 	}
 }

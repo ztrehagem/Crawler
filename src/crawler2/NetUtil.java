@@ -19,7 +19,6 @@ class NetUtil {
 	}
 
 	static void downloadToFile( URL url, File dist ) throws FileNotFoundException, IOException {
-		dist.createNewFile();
 
 		InputStream in = url.openStream();
 		FileOutputStream out = new FileOutputStream( dist );

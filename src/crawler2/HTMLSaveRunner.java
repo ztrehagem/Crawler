@@ -1,9 +1,9 @@
 package crawler2;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.concurrent.Callable;
 
-class HTMLSaveRunner implements Runnable {
+class HTMLSaveRunner implements Callable<SaveRunnerResult> {
 
 	private final Brain		brain;
 	private final String	url;
@@ -20,20 +20,12 @@ class HTMLSaveRunner implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public SaveRunnerResult call() throws Exception {
 
-		try {
-			final String src = NetUtil.downloadToString( url );
+		final String src = NetUtil.downloadToString( url );
+		final HTMLModifier r = new HTMLModifier( brain, url, src, h );
+		StrUtil.saveToFile( file, r.getResult() );
 
-			final HTMLModifier r = new HTMLModifier( brain, url, src, h );
-
-			StrUtil.saveToFile( file, r.getResult() );
-		}
-		catch( IOException e ) {
-			brain.log.e( getClass(), "failed : " + e );
-			return;
-		}
-
-		brain.log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
+		return new SaveRunnerResult( url, file.toString() );
 	}
 }
