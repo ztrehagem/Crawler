@@ -57,7 +57,7 @@ class ThreadObserver {
 			}
 			catch( ExecutionException e ) {
 				this.failed += 1;
-				brain.log.e( getClass(), "failed : " + e );
+				brain.log.e( getClass(), "failed : " + e.getCause() );
 			}
 			finally {
 				this.complete += 1;
