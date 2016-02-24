@@ -3,11 +3,11 @@ package crawler2;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.concurrent.Callable;
 
-class CSSSaveRunner implements Runnable {
+class CSSSaveRunner implements Callable<Void> {
 
 	private final Brain		brain;
 	private final String	url;
@@ -20,27 +20,20 @@ class CSSSaveRunner implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public Void call() throws Exception {
 
-		try {
-			file.createNewFile();
+		FileWriter w = new FileWriter( file );
+		BufferedReader r = new BufferedReader( new InputStreamReader( new URL( url ).openStream() ) );
 
-			FileWriter w = new FileWriter( file );
-			BufferedReader r = new BufferedReader( new InputStreamReader( new URL( url ).openStream() ) );
+		String line;
+		while( (line = r.readLine()) != null )
+			w.write( CSSModifier.modify( brain, url, line ) + '\n' );
 
-			String line;
-			while( (line = r.readLine()) != null )
-				w.write( CSSModifier.modify( brain, url, line ) + '\n' );
+		r.close();
+		w.close();
 
-			r.close();
-			w.close();
-		}
-		catch( IOException e ) {
-			brain.log.e( getClass(), "failed : " + e );
-			return;
-		}
-
-		brain.log.v( getClass(), "saved '" + url + "' -> '" + file + "'" );
+		brain.log.i( getClass(), "saved '" + url + "' -> '" + file + "'" );
+		return null;
 	}
 
 }

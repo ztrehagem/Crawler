@@ -16,23 +16,27 @@ class Log {
 		this.brain = brain;
 	}
 
-	public void v( Class<?> cls, String msg ) {
-		print( System.out, format( cls, msg ) );
+	public void d( Class<?> cls, String msg ) {
+		if( brain.printDebugLog )
+			print( System.out, format( "d", cls, msg ) );
+	}
+
+	public void i( Class<?> cls, String msg ) {
+		print( System.out, format( "i", cls, msg ) );
 	}
 
 	public void e( Class<?> cls, String msg ) {
-		print( System.err, format( cls, msg ) );
+		print( System.err, format( "e", cls, msg ) );
 	}
 
 	private void print( PrintStream ps, String s ) {
 		if( logfile != null )
 			logfile.println( s );
-		if( brain.printLog )
-			ps.println( s );
+		ps.println( s );
 	}
 
-	private String format( Class<?> cls, String msg ) {
-		return "[" + cls.getSimpleName() + " " + getTime() + "]" + System.lineSeparator() + msg + System.lineSeparator();
+	private String format( String mode, Class<?> cls, String msg ) {
+		return "[" + mode + "/" + cls.getSimpleName() + " " + getTime() + "]" + System.lineSeparator() + msg + System.lineSeparator();
 	}
 
 	private String getTime() {
