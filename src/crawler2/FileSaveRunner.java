@@ -1,9 +1,8 @@
 package crawler2;
 
 import java.io.File;
-import java.util.concurrent.Callable;
 
-class FileSaveRunner implements Callable<Void> {
+class FileSaveRunner implements Runnable {
 
 	private final Brain		brain;
 	private final String	url;
@@ -16,11 +15,14 @@ class FileSaveRunner implements Callable<Void> {
 	}
 
 	@Override
-	public Void call() throws Exception {
-
-		NetUtil.downloadToFile( url, file );
+	public void run() {
+		try {
+			NetUtil.downloadToFile( url, file );
+		}
+		catch( Exception e ) {
+			brain.log.e( getClass(), "failed : " + e );
+		}
 
 		brain.log.i( getClass(), "saved '" + url + "' -> '" + file + "'" );
-		return null;
 	}
 }

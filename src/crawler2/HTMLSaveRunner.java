@@ -1,9 +1,8 @@
 package crawler2;
 
 import java.io.File;
-import java.util.concurrent.Callable;
 
-class HTMLSaveRunner implements Callable<Void> {
+class HTMLSaveRunner implements Runnable {
 
 	private final Brain		brain;
 	private final String	url;
@@ -20,13 +19,16 @@ class HTMLSaveRunner implements Callable<Void> {
 	}
 
 	@Override
-	public Void call() throws Exception {
-
-		final String src = NetUtil.downloadToString( url );
-		final HTMLModifier r = new HTMLModifier( brain, url, src, h );
-		StrUtil.saveToFile( file, r.getResult() );
+	public void run() {
+		try {
+			final String src = NetUtil.downloadToString( url );
+			final HTMLModifier r = new HTMLModifier( brain, url, src, h );
+			StrUtil.saveToFile( file, r.getResult() );
+		}
+		catch( Exception e ) {
+			brain.log.e( getClass(), "failed : " + e );
+		}
 
 		brain.log.i( getClass(), "saved '" + url + "' -> '" + file + "'" );
-		return null;
 	}
 }
