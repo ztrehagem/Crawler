@@ -11,12 +11,12 @@ abstract class AttributeModifier {
 
 	abstract String logic( Element e );
 
-	protected final Brain			brain;
+	protected final Brain brain;
 
-	private final OutputDocument	od;
-	protected final String			url;
-	protected final String			tagname;
-	protected final String			attrname;
+	private final OutputDocument od;
+	protected final String url;
+	protected final String tagname;
+	protected final String attrname;
 
 	AttributeModifier( Brain brain, OutputDocument od, String url, String tagname, String attrname ) {
 		this.brain = brain;

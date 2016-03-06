@@ -2,9 +2,9 @@ package crawler2;
 
 class ResultHolder {
 
-	private final Brain	brain;
+	private final Brain brain;
 
-	private int			find, submit, offer, complete, succeed, fail;
+	private int find, submit, execute, complete, succeed, fail;
 
 	ResultHolder( Brain brain ) {
 		this.brain = brain;
@@ -12,30 +12,42 @@ class ResultHolder {
 
 	void print() {
 		final String endl = System.lineSeparator();
-		brain.log.i( getClass(), "     find : " + this.find + endl + "   submit : " + this.submit + endl + "    offer : " + this.offer + endl + " complete : " + this.complete + endl + "  succeed : " + this.succeed + endl + "     fail : " + this.fail );
+		brain.log.i( getClass(), "     find : " + this.find + endl + "   submit : " + this.submit + endl + "  execute : " + this.execute + endl + " complete : " + this.complete + endl + "  succeed : " + this.succeed + endl + "     fail : " + this.fail );
 	}
 
-	void found() {
+	synchronized void found() {
 		this.find++;
 	}
 
-	void submitted() {
+	synchronized void submitted() {
 		this.submit++;
 	}
 
-	void offered() {
-		this.offer++;
+	synchronized void executed() {
+		this.execute++;
 	}
 
-	void completed() {
+	synchronized void completed() {
 		this.complete++;
 	}
 
-	void succeeded() {
+	synchronized void succeeded() {
 		this.succeed++;
 	}
 
-	void failed() {
+	synchronized void failed() {
 		this.fail++;
+	}
+
+	int getSubmitted() {
+		return submit;
+	}
+
+	int getExecuted() {
+		return execute;
+	}
+
+	int getCompleted() {
+		return complete;
 	}
 }

@@ -9,8 +9,8 @@ import java.util.Date;
 
 class Log {
 
-	private final Brain	brain;
-	private PrintWriter	logfile;
+	private final Brain brain;
+	private PrintWriter logfile;
 
 	Log( Brain brain ) {
 		this.brain = brain;

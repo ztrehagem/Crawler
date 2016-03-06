@@ -1,64 +1,46 @@
 package crawler2;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import crawler2.MyThreadPoolExecutor.AfterExecuteListener;
+import crawler2.MyThreadPoolExecutor.BeforeExecuteListener;
 
-class ThreadObserver implements Consumer<Future<?>> {
+class ThreadObserver implements BeforeExecuteListener, AfterExecuteListener {
 
-	private final Brain						brain;
-	private final ExecutorService			exe;
-	private final BlockingQueue<Future<?>>	q;
-	private final ResultHolder				result;
+	private final Brain brain;
+	private final MyThreadPoolExecutor exe;
+	private final ResultHolder result;
+	private final Object mtx;
 
 	ThreadObserver( Brain brain ) {
 		this.brain = brain;
-		this.exe = Executors.newFixedThreadPool( brain.connectionNum );
-		this.q = new LinkedBlockingQueue<>();
-		//		this.q = new ArrayBlockingQueue<>( 4 );
+		this.exe = new MyThreadPoolExecutor( brain.connectionNum );
 		this.result = new ResultHolder( brain );
+		this.mtx = new Object();
+
+		this.exe.setBeforeExecuteListener( this );
+		this.exe.setAfterExecuteListener( this );
 	}
 
-	void offer( Callable<?> c ) {
+	void offer( Runnable r ) {
 		result.found();
 
 		try {
-			addQ( exe.submit( c ) );
+			exe.submit( r );
+			result.submitted();
 		}
 		catch( Exception e ) {
 			brain.log.e( getClass(), "failed submit : " + e );
 		}
 	}
 
-	private void addQ( Future<?> f ) {
-		result.submitted();
-
-		if( q.offer( f ) ) {
-			result.offered();
+	void awaitComplete() {
+		try {
+			synchronized( mtx ) {
+				mtx.wait();
+			}
 		}
-	}
-
-	void await() {
-
-		while( !q.isEmpty() ) {
-			try {
-				Thread.sleep( 1000 );
-				// これが終了しないとプログラムが終了しない
-				// 開始前のFutureについてもforEachしてしまう
-			}
-			catch( InterruptedException e ) {
-			}
-
-			q.forEach( this );
-
-			if( brain.printDebugLog )
-				brain.log.d( getClass(), "Q size : " + q.size() );
+		catch( InterruptedException e ) {
+			brain.log.e( getClass(), "Interrupted in await" );
 		}
 	}
 
@@ -76,26 +58,31 @@ class ThreadObserver implements Consumer<Future<?>> {
 	}
 
 	@Override
-	public void accept( Future<?> t ) {
-		if( t.isDone() ) {
-			q.remove( t );
+	public void beforeExecute() {
+		this.result.executed();
+	}
 
-			try {
-				t.get();
-				result.succeeded();
-			}
-			catch( InterruptedException e ) {
-				result.failed();
-				brain.log.e( getClass(), "Interrupted : " + e );
-			}
-			catch( ExecutionException e ) {
-				result.failed();
-				brain.log.e( getClass(), "failed : " + e.getCause() );
-			}
-			finally {
-				result.completed();
+	@Override
+	public void afterExecute( Throwable t ) {
+		this.result.completed();
+
+		if( t == null ) {
+			this.result.succeeded();
+		}
+		else {
+			this.result.failed();
+		}
+
+		final int completed = this.result.getCompleted();
+		final int executed = this.result.getExecuted();
+		final int submitted = this.result.getSubmitted();
+
+		brain.log.i( getClass(), "" + completed + " / " + executed + " / " + submitted );
+
+		if( completed >= submitted ) {
+			synchronized( mtx ) {
+				mtx.notifyAll();
 			}
 		}
 	}
-
 }

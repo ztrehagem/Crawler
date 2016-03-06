@@ -2,8 +2,8 @@ package crawler2;
 
 class HTMLMasterMapV {
 
-	String	filename;
-	boolean	saved;
+	String filename;
+	boolean saved;
 
 	HTMLMasterMapV( String filename, boolean saved ) {
 		this.filename = filename;
