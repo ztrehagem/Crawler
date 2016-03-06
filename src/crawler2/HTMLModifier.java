@@ -8,10 +8,10 @@ import net.htmlparser.jericho.Source;
 
 class HTMLModifier {
 
-	private final Brain				brain;
-	private final String			url;
-	private final int				h;
-	private final OutputDocument	od;
+	private final Brain brain;
+	private final String url;
+	private final int h;
+	private final OutputDocument od;
 
 	HTMLModifier( Brain brain, String url, String src, int h ) {
 		this.brain = brain;

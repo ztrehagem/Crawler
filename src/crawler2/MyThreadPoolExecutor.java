@@ -6,8 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 class MyThreadPoolExecutor extends ThreadPoolExecutor {
 
-	private BeforeExecuteListener	before;
-	private AfterExecuteListener	after;
+	private BeforeExecuteListener before;
+	private AfterExecuteListener after;
 
 	MyThreadPoolExecutor( int size ) {
 		super( size, size, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>() );

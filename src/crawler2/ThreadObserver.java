@@ -6,10 +6,10 @@ import crawler2.MyThreadPoolExecutor.BeforeExecuteListener;
 
 class ThreadObserver implements BeforeExecuteListener, AfterExecuteListener {
 
-	private final Brain					brain;
-	private final MyThreadPoolExecutor	exe;
-	private final ResultHolder			result;
-	private final Object				mtx;
+	private final Brain brain;
+	private final MyThreadPoolExecutor exe;
+	private final ResultHolder result;
+	private final Object mtx;
 
 	ThreadObserver( Brain brain ) {
 		this.brain = brain;

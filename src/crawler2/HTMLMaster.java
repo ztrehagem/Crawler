@@ -6,10 +6,10 @@ import java.util.UUID;
 
 class HTMLMaster implements Master {
 
-	private final Map<String, HTMLMasterMapV>	map;
-	private static final String					PREFIX						= "page-";
-	private static final String					SUFFIX						= ".html";
-	private static final String					default_startPageFileTitle	= "root";
+	private final Map<String, HTMLMasterMapV> map;
+	private static final String PREFIX = "page-";
+	private static final String SUFFIX = ".html";
+	private static final String default_startPageFileTitle = "root";
 
 	HTMLMaster() {
 		this.map = new HashMap<>();

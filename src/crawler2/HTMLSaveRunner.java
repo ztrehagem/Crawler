@@ -4,10 +4,10 @@ import java.io.File;
 
 class HTMLSaveRunner implements Runnable {
 
-	private final Brain		brain;
-	private final String	url;
-	private final File		file;
-	private final int		h;
+	private final Brain brain;
+	private final String url;
+	private final File file;
+	private final int h;
 
 	HTMLSaveRunner( Brain brain, String url, int h ) {
 		this.brain = brain;

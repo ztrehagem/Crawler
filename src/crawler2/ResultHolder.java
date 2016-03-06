@@ -2,9 +2,9 @@ package crawler2;
 
 class ResultHolder {
 
-	private final Brain	brain;
+	private final Brain brain;
 
-	private int			find, submit, execute, complete, succeed, fail;
+	private int find, submit, execute, complete, succeed, fail;
 
 	ResultHolder( Brain brain ) {
 		this.brain = brain;

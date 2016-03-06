@@ -10,13 +10,13 @@ import net.htmlparser.jericho.PHPTagTypes;
 
 public class Crawler {
 
-	private final Brain				brain;
-	private final String			url;
-	private final int				level;
+	private final Brain brain;
+	private final String url;
+	private final int level;
 
-	private static final String		default_rootDirPath		= "./result";
-	private static final int		default_connectionNum	= 16;
-	private static final boolean	default_printDebugLog	= false;
+	private static final String default_rootDirPath = "./result";
+	private static final int default_connectionNum = 16;
+	private static final boolean default_printDebugLog = false;
 
 	public Crawler( String url, int level ) throws MalformedURLException, URISyntaxException, InterruptedException {
 		this( url, level, default_rootDirPath, default_connectionNum, default_printDebugLog );

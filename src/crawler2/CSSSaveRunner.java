@@ -8,9 +8,9 @@ import java.net.URL;
 
 class CSSSaveRunner implements Runnable {
 
-	private final Brain		brain;
-	private final String	url;
-	private final File		file;
+	private final Brain brain;
+	private final String url;
+	private final File file;
 
 	CSSSaveRunner( Brain brain, String url ) {
 		this.brain = brain;

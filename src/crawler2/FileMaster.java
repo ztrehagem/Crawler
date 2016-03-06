@@ -6,9 +6,9 @@ import java.util.UUID;
 
 class FileMaster implements Master {
 
-	private final Map<String, String>	map;
+	private final Map<String, String> map;
 
-	private static final String			PREFIX	= "file-";
+	private static final String PREFIX = "file-";
 
 	FileMaster() {
 		this.map = new HashMap<>();
