@@ -4,12 +4,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-class MyExecutorService extends ThreadPoolExecutor {
+class MyThreadPoolExecutor extends ThreadPoolExecutor {
 
 	private BeforeExecuteListener	before;
 	private AfterExecuteListener	after;
 
-	MyExecutorService( int size ) {
+	MyThreadPoolExecutor( int size ) {
 		super( size, size, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>() );
 	}
 

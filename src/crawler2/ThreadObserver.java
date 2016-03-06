@@ -1,19 +1,19 @@
 package crawler2;
 
 import java.util.concurrent.TimeUnit;
-import crawler2.MyExecutorService.AfterExecuteListener;
-import crawler2.MyExecutorService.BeforeExecuteListener;
+import crawler2.MyThreadPoolExecutor.AfterExecuteListener;
+import crawler2.MyThreadPoolExecutor.BeforeExecuteListener;
 
 class ThreadObserver implements BeforeExecuteListener, AfterExecuteListener {
 
-	private final Brain				brain;
-	private final MyExecutorService	exe;
-	private final ResultHolder		result;
-	private final Object			mtx;
+	private final Brain					brain;
+	private final MyThreadPoolExecutor	exe;
+	private final ResultHolder			result;
+	private final Object				mtx;
 
 	ThreadObserver( Brain brain ) {
 		this.brain = brain;
-		this.exe = new MyExecutorService( brain.connectionNum );
+		this.exe = new MyThreadPoolExecutor( brain.connectionNum );
 		this.result = new ResultHolder( brain );
 		this.mtx = new Object();
 
@@ -33,7 +33,7 @@ class ThreadObserver implements BeforeExecuteListener, AfterExecuteListener {
 		}
 	}
 
-	void await() {
+	void awaitComplete() {
 		try {
 			synchronized( mtx ) {
 				mtx.wait();
