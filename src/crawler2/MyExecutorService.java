@@ -10,7 +10,7 @@ class MyExecutorService extends ThreadPoolExecutor {
 	private AfterExecuteListener	after;
 
 	MyExecutorService( int size ) {
-		super( size, size, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>( 2 ) );
+		super( size, size, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>() );
 	}
 
 	void setBeforeExecuteListener( BeforeExecuteListener l ) {
